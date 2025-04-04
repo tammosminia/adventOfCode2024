@@ -1,17 +1,23 @@
-import Day3.mul
-import Day3.parse
 import Day3.run1
 import Day3.run2
 
 object Day3 {
 
     fun parse(input: String): List<String> {
-        val mulReg = Regex("mul\\([0-9]+,[0-9]+\\)")
-        val validCharacters = "mul(,)0123456789"
-        fun isValid(c: Char): Boolean = validCharacters.contains(c)
-        val validated = input.filter { isValid(it) }
-        return mulReg.findAll(validated).map { it.value }.toList()
+        val mulReg = Regex("mul\\(\\d{1,3}+,\\d{1,3}+\\)")
+        return mulReg.findAll(input).map { it.value }.toList()
     }
+
+    private fun clean(input: String): String {
+        val firstDont = input.indexOf("don't()")
+        if (firstDont == -1) return input
+        val firstDo = input.indexOf("do()", startIndex = firstDont)
+        if (firstDo == -1) return input
+        return clean(input.take(firstDont) + input.drop(firstDo + 4))
+    }
+
+    fun parse2(input: String): List<String> =
+        parse(clean(input))
 
     fun mul(s: String): Int {
         val numReg = Regex("[0-9]+")
@@ -22,8 +28,8 @@ object Day3 {
     fun run1(input: String): Int =
         parse(input).sumOf { mul(it) }
 
-
-    fun run2(input: String): Int = 0
+    fun run2(input: String): Int =
+        parse2(input).sumOf { mul(it) }
 }
 
 fun main() {
@@ -35,5 +41,5 @@ fun main() {
 mul(946,420)~)where(719,224)mul(718,516)select()/{# when(),*?<mul(400,748)}who()where()select(308,170):]from(2,72)mul(357,947){what()*how(){*where()what()select()mul(430,803)::from()-*'where()from()mulwhen(660,983)mul(445,455)mul(490,913)select()#*mul(646,393)>@~select()@~who()mul(901,342)*mul(499,634)%!mul(996,710)~/}select()mul(8,949);(!};from(): mul(860,166)(@-from()'',mul(739,160)%who(265,676) mul(988,26) ,+/mul(293,416)where()+#}-from(){(@(mul(215,463)mul(152,776)+*]'#'mul(447,726)how()-#}select()what()select(892,487)% mul(182,115)^<(why()mul(335,275)when(801,993)];select()}'>^how()>do()mul(704,863)+why()'*&mul(709,745)who(){select()mul(17,822)}from()!+;!+,where()]mul(280,107)~?}how()/'(?who()mul(288,599)%what() ])mul(463,772)@mul(992,279)what()!:why()>>who() (mul(348,687)*]mul(477,896)when(47,10)&where()?what()%[mul(804,970)from()from()select()+what()[who()-?mul(166,890)&-^mul(892,532)mul(905,17)*)/]>@ {*:mul(361,902)[]~*mul(629{*<)how()from()#({mul(924,910)'who()why()'&)}mul(322,152) &mul(503,282)^ )/what()what()%mul(678,160)when()!?&#<%^*mul(661,59)(*mul(936]'<what()what()![[{)!mul(572,448)]#!from()mul(509,887)^&?how()from()?why()]mul(393,953)don't()@what()what()why()~,+*when()mul(546,677)when()^where(292,766)mul(968,760-&!why()mul(657,456)select();~mul(527,553):how()#~#mul(639,12)>;)];)who()&&mul(437,929)who()mul(298,239)<(%:>}do()mul(727,688)~(<)who(846,894)mul(720,201)!@)}mul(139,406)~!mul(123,17)&select(564,607)(]<mul(407,428);^):{+how()mul(606,64):)mul(652,400)%:;who()/][mul(850,192)mul(184,269)why()< }!@*<}mul(655,422)>:who()where();^//mul(905,342)&%)mul(185,967)--~+ when()@mul(594,891)#:[%,;mul(641,786),@>'how()don't(),mul(185,960)(mul(702,204)]]!(%++# mul(24,904)!mul(109,193)+[{when()mul(579,493)%where():!mul(473,16)from()]mul(33,997)mul(104,325)'mul(486,457)select()who()<-who()]&mul(720,711)&do()how()!/!%*^^mul(239,525),from()select()mul(77,963)how()]where()<who()'-~/:mul(856,16);<mul(356,792)+/(where():}}mul(15,617)mul(878,763))~when()where()%#(select():mul(427,938)^where()^<mul(208,838)*)who()*'< %mul(982,594)-%mul(683,977)-+;,mul(541,415)~why(){*(what(),when()mul(648,533) when()'?%<*how()do();how(108,300))when()mul(291,292)mul(65,4):from()&mul(466,215)#%&;[,select()<what()do()+select(){?{~where()'what()mul(637,530)mul(75,335),;)[+%mul(738,984)(select()/{what()when(773,881)mul(916,756)?:]:!^mul(991,341)mul(145,20)mul(279,825)[](when(879,87)({<#)how()mul(326,199)#:{what()what()<}:where()mul(112,738)when()<select(930,412)from()mul(887,573)^-,from()mul(795,440)mul(94,274)when()(select()how()when():mul(841,178)how()mul(127,186)!:~/-where()<what(10,606)mul(291,547):mul(21,379)&^when()what()+/mul(172,574)@+@what()'why()~mul(765,254)where()mul(448,944),>{what()+mul(452,303);/~mul(55,517)&>^~when()-mul(949,308)(@~@what()@**how()mul(185,245)+}how() select()mul(89,379)~&!@ where()-)"""
     println(run1(input))
     println(run2(input))
-    parse(input).forEach { println("$it,${mul(it)}") }
+//    parse(input).forEach { println("$it,${mul(it)}") }
 }
