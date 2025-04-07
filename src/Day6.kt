@@ -8,6 +8,13 @@ object Day6 {
 
     data class Coordinate(val x: Int, val y: Int) {
         operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
+        fun directionChar(): Char = when(this) {
+            Coordinate(-1, 0) -> '<'
+            Coordinate(1, 0) -> '>'
+            Coordinate(0, -1) -> '^'
+            Coordinate(0, 1) -> 'v'
+            else -> 'X'
+        }
     }
     data class Grid<E>(val m: List<List<E>>) {
         fun width(): Int = m.first().size
@@ -30,7 +37,9 @@ object Day6 {
             c.x >= 0 && c.x < width() && c.y >= 0 && c.y < height()
 
         fun findAll(e: E): List<Coordinate> =
-            allCoordinates().filter { get(it) == e }
+            findAll { it == e }
+        fun findAll(f: (E) -> Boolean): List<Coordinate> =
+            allCoordinates().filter { f(get(it)) }
     }
 
     val allDirections = listOf(
@@ -43,9 +52,8 @@ object Day6 {
         Grid(input.lines().filter { it.isNotBlank() }.map { it.toCharArray().toList() })
 
     const val free = '.'
-    const val visited = 'X'
+    val visited = "X<>^v".toCharArray()
     const val obstacle = '#'
-    const val guard = '^'
 
     data class Guard(val location: Coordinate, val direction: Coordinate) {
         fun turnRight(): Guard {
@@ -64,29 +72,34 @@ object Day6 {
 
     data class State(val grid: Grid<Char>, val guard: Guard) {
         fun guardHasLeft() = !grid.isInside(guard.location)
+        fun isLooping(): Boolean = grid.get(guard.location) == guard.direction.directionChar()
     }
 
     fun oneStep(s: State): State {
         val obstacleAhead = s.grid.getSafe(s.guard.locationAhead()) == obstacle
-        val newGuard = if (obstacleAhead) s.guard.turnRight() else s.guard.stepForward()
-        val newGrid = s.grid.set(s.guard.location, visited)
-        return State(grid = newGrid, guard = newGuard)
+        return if (obstacleAhead)
+            State(s.grid, s.guard.turnRight())
+        else
+            State(
+                s.grid.set(s.guard.location, s.guard.direction.directionChar()),
+                s.guard.stepForward()
+            )
     }
 
     fun initialState(input: Grid<Char>): State {
         val (guardLoc) = input.findAll('^')
         return State(
-            input,
+            input.set(guardLoc, free),
             Guard(guardLoc, Coordinate(0, -1))
         )
     }
 
     fun visitedLocations(g: Grid<Char>): Int =
-        g.findAll(visited).count()
+        g.findAll(visited::contains).count()
 
     fun run1(input: Grid<Char>): Int {
         tailrec fun rec(s: State): Int =
-            if(s.guardHasLeft()) {
+            if (s.guardHasLeft() || s.isLooping()) {
                 visitedLocations(s.grid)
             } else {
                 rec(oneStep(s))
@@ -94,9 +107,25 @@ object Day6 {
         return rec(initialState(input))
     }
 
+    fun willLoop(g: Grid<Char>): Boolean {
+        tailrec fun rec(s: State, steps: Int = 0): Boolean =
+            if (s.guardHasLeft()) {
+                false
+            } else if(s.isLooping()) {
+                true
+            } else if(steps > 64000) {
+                true
+            } else {
+                rec(oneStep(s), steps + 1)
+            }
+        return rec(initialState(g))
+    }
 
     fun run2(input: Grid<Char>): Int =
-        0
+        input.findAll(free).count { newObstacle ->
+            willLoop(input.set(newObstacle, obstacle))
+        }
+
 }
 
 fun main() {

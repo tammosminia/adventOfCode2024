@@ -1,6 +1,7 @@
 import Day6.parse
 import Day6.run1
 import Day6.run2
+import Day6.willLoop
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -17,6 +18,12 @@ class Day6Test {
         #.........
         ......#...
     """.trimIndent()
+    val sample2 = """
+        .#..
+        ...#
+        #...
+        .^#.
+    """.trimIndent()
     val input = parse(sample)
     @Test
     fun test1() {
@@ -24,7 +31,8 @@ class Day6Test {
     }
     @Test
     fun test2() {
-        assertEquals(123, run2(input))
+        assertEquals(6, run2(input))
+        assert(willLoop(parse(sample2)))
     }
 
 }
