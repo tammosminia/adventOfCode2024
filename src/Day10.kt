@@ -1,8 +1,6 @@
 import Day10.parse
 import Day10.run1
 import Day10.run2
-import kotlin.math.max
-import kotlin.math.min
 
 object Day10 {
     fun <E> List<E>.update(index: Int, e: E): List<E> =
