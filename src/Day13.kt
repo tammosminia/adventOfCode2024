@@ -17,7 +17,7 @@ object Day13 {
     data class Coordinate(val x: Long, val y: Long) {
         operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
         operator fun minus(c: Coordinate): Coordinate = Coordinate(x - c.x, y - c.y)
-        operator fun times(i: Int): Coordinate = Coordinate(x * i, y * i)
+        operator fun times(i: Long): Coordinate = Coordinate(x * i, y * i)
     }
 
     data class Machine(val buttonA: Coordinate, val buttonB: Coordinate, val prize: Coordinate) {
@@ -32,27 +32,60 @@ object Day13 {
         }
     }
 
-    data class Solution(val a: Int, val b: Int) {
-        fun cost(): Int = a * 3 + b
+    data class Solution(val a: Long, val b: Long) {
+        fun cost(): Long = a * 3 + b
     }
 
-    fun solveMachine(machine: Machine, maxPresses: Int = 100): Solution? {
-        val range = 0..<maxPresses
-        val solutions = range.flatMap { a ->
-            range.filter { b -> machine.buttonA * a + machine.buttonB * b == machine.prize }
-                .map { b -> Solution(a, b) }
+    fun solveMachine(machine: Machine, maxPresses: Long = 100): Solution? {
+        val range = 0L..<maxPresses
+//        val solutions = range.flatMap { a ->
+//            range.filter { b -> machine.buttonA * a + machine.buttonB * b == machine.prize }
+//                .map { b -> Solution(a, b) }
+//        }
+//        return solutions.minByOrNull { it.cost() }
+        range.forEach { a ->
+            val rest = machine.prize - machine.buttonA * a
+            val dx = rest.x / machine.buttonB.x
+            val rx = rest.x % machine.buttonB.x
+            val dy = rest.y / machine.buttonB.y
+            val ry = rest.y % machine.buttonB.y
+            if (rx == 0L && ry == 0L && dx == dy) return Solution(a, dx)
         }
-        return solutions.minByOrNull { it.cost() }
+        return null
     }
 
     fun parse(input: String): List<Machine> =
         input.lines().splitAtElement("").map(Machine::parse)
 
-    fun run1(input: List<Machine>): Int =
-        input.sumOf { solveMachine(it)?.cost() ?: 0 }
+    fun run1(input: List<Machine>): Long =
+        input.sumOf { solveMachine(it)?.cost() ?: 0L }
 
-    fun run2(input: List<Machine>): Int = 0
+    fun run2(input: List<Machine>): Long =
+        input.sumOf { solveMachine2(it)?.cost() ?: 0L }
 
+    fun findEqual(m: Machine): Solution? {
+        var b = 1L
+        while (true) {
+            (0L..b).forEach { a ->
+                val c = m.buttonA * a + m.buttonB * b
+                if (c.x == c.y) return Solution(a, b)
+            }
+            b += 1
+            if (b > 1000) return null
+        }
+    }
+
+    fun solveMachine2(m: Machine): Solution? {
+        val e = findEqual(m) ?: return null
+        val eAmount = (m.buttonA * e.a).x + (m.buttonB * e.b).x
+        val addFor2 = 10000000000000
+        val keep = 100000
+        val timesE = (addFor2 - keep) / eAmount
+        val toAdd = addFor2 - eAmount * timesE
+        val newMachine = m.copy(prize = m.prize + Coordinate(toAdd, toAdd))
+        println("solving $newMachine")
+        return solveMachine(newMachine, 10000)?.let { Solution(it.a + e.a, it.b + e.b) }
+    }
 }
 
 fun main() {

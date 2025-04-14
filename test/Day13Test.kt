@@ -29,6 +29,6 @@ class Day13Test {
     }
     @Test
     fun test2() {
-        assertEquals(80, run2(input1))
+        assertEquals(5065, run2(input1))
     }
 }
