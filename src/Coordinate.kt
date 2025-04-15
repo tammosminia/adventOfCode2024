@@ -13,6 +13,14 @@ data class Coordinate<T>(val x: T, val y: T) {
         val straightDirections = setOf(left, up, down, right)
         val diagonalDirections = setOf(Coordinate<Int>(-1, -1), Coordinate<Int>(-1, 1), Coordinate<Int>(1, -1), Coordinate<Int>(1, 1))
         val allDirections = straightDirections + diagonalDirections
+
+        fun parseDirection(c: Char): Coordinate<Int>? = when (c) {
+            '<' -> left
+            '>' -> right
+            '^' -> up
+            'v' -> down
+            else -> null
+        }
     }
 //    operator fun plus(c: Coordinate<Int>): Coordinate<T> = Coordinate(x.plusNumber(c.x), y.plusNumber(c.y))
 //    operator fun minus(c: Coordinate): Coordinate<T> = Coordinate(x - c.x, y - c.y)
