@@ -3,21 +3,7 @@ import Day14.run1
 import Day14.run2
 
 object Day14 {
-    fun <E> Collection<E>.tap(f: (E) -> Unit): Collection<E> {
-        this.forEach(f)
-        return this
-    }
-
-    // java % gives back negative values. This should not be! TODO: blog, of had ik dat al gedaan?
-    fun fixedRemainder(x1: Int, x2: Int) = (x1+x2) % x2
-
-    data class Coordinate(val x: Int, val y: Int) {
-        operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
-        operator fun minus(c: Coordinate): Coordinate = Coordinate(x - c.x, y - c.y)
-        operator fun times(i: Int): Coordinate = Coordinate(x * i, y * i)
-    }
-
-    data class Robot(val pos: Coordinate, val velocity: Coordinate){
+    data class Robot(val pos: Coordinate<Int>, val velocity: Coordinate<Int>){
         companion object {
             fun parse(line: String): Robot {
                 val (x, y, dx, dy) = Regex("-?\\d+").findAll(line).map { it.value.toInt() }.toList()
@@ -28,12 +14,12 @@ object Day14 {
     data class RobotRoom(val robots: List<Robot>, val width: Int, val height: Int) {
         fun moveRobot(r: Robot): Robot {
             val dest = r.pos + r.velocity
-            return Robot(Coordinate(fixedRemainder(dest.x, width), fixedRemainder(dest.y, height)), r.velocity)
+            return Robot(Coordinate(modulo(dest.x, width), modulo(dest.y, height)), r.velocity)
         }
 
         fun move(): RobotRoom = RobotRoom(robots.map(this::moveRobot), width, height)
 
-        fun quadrantOf(c: Coordinate): Int? {
+        fun quadrantOf(c: Coordinate<Int>): Int? {
             val top = c.y < height / 2
             val bottom = c.y > height / 2
             val left = c.x < width / 2
@@ -54,6 +40,14 @@ object Day14 {
                 .tap { println(it) }
                 .fold(1) { acc, i -> acc * i }
 
+        fun toGrid(): Grid<Int> =
+            robots.fold(Grid.init(width, height, 0)) { acc, robot ->
+                acc.update(robot.pos) { it + 1 }
+            }
+
+        fun print(): Unit =
+            toGrid().map { it.digitToChar() }.print()
+
     }
 
     fun parse(input: String, width: Int, height: Int): RobotRoom =
@@ -63,14 +57,27 @@ object Day14 {
         if (moves == 0) rr
         else simulate(rr.move(), moves - 1)
 
+    fun mightBeTree(rr: RobotRoom): Boolean =
+        rr.toGrid().m.sumOf { line ->
+            line.windowed(2, 1).count { l ->
+                l[0] != l[1]
+            }
+        } < 500
+
     fun run1(input: RobotRoom): Int {
         val rr = simulate(input)
         println(rr)
         return rr.safetyFactor()
     }
 
-    fun run2(input: RobotRoom): Int =
-        0
+    tailrec fun run2(rr: RobotRoom, time: Int = 0): Unit {
+        if (mightBeTree(rr)) {
+            println("time: $time")
+            rr.print()
+        }
+        run2(rr.move(), time + 1)
+    }
+
 }
 
 fun main() {

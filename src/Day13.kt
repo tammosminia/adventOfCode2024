@@ -3,16 +3,6 @@ import Day13.run1
 import Day13.run2
 
 object Day13 {
-    fun <E> List<E>.splitAtElement(e: E): List<List<E>> {
-        when(val i = indexOf(e)) {
-            -1 -> return listOf(this)
-            else -> {
-                val first = this.take(i)
-                val rest = this.drop(i + 1)
-                return listOf(first) + rest.splitAtElement(e)
-            }
-        }
-    }
 
     data class Coordinate(val x: Long, val y: Long) {
         operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)

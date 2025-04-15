@@ -1,6 +1,5 @@
 import Day14.parse
 import Day14.run1
-import Day14.run2
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -22,11 +21,7 @@ class Day14Test {
     val input1 = parse(sample1, 11, 7)
     @Test
     fun test1() {
-        assertEquals(Day14.Coordinate(2, 5), input1.moveRobot(input1.robots[7]).pos)
+        assertEquals(Coordinate(2, 5), input1.moveRobot(input1.robots[7]).pos)
         assertEquals(12, run1(input1))
-    }
-    @Test
-    fun test2() {
-        assertEquals(5065, run2(input1))
     }
 }
