@@ -1,6 +1,7 @@
 import Day15.parse
 import Day15.run1
 import Day15.run2
+import kotlin.math.min
 
 object Day15 {
     data class Input(val grid: Grid<Char>, val movements: List<Coordinate<Int>>)
@@ -23,11 +24,67 @@ object Day15 {
         return push('@', robot + direction, grid.set(robot, '.'))
     }
 
+    fun expand(grid: Grid<Char>): Grid<Char> =
+        Grid(grid.m.map { it.flatMap { c ->
+            when (c) {
+                'O' -> listOf('[', ']')
+                '@' -> listOf('@', '.')
+                else -> listOf(c, c)
+            }
+        } })
+
+    fun moveRobot2(grid: Grid<Char>, direction: Coordinate<Int>): Grid<Char> {
+        data class Push(val o: Char, val to: Coordinate<Int>)
+        tailrec fun pushV(pushes: List<Push>, g: Grid<Char>): Grid<Char> =
+            if (pushes.isEmpty()) g
+            else {
+                val push = pushes.first()
+                val todo = pushes.drop(1)
+                when (g.get(push.to)) {
+                    '.' -> pushV(todo, g.set(push.to, push.o))
+                    '#' -> grid
+                    '[' ->
+                        pushV(pushes.drop(1) +
+                                Push('[', push.to + direction) +
+                                Push(']', push.to + direction + Coordinate.right),
+                            g.set(push.to, push.o).set(push.to + Coordinate.right, '.')
+                        )
+                    ']' ->
+                        pushV(pushes.drop(1) +
+                                Push(']', push.to + direction) +
+                                Push('[', push.to + direction + Coordinate.left),
+                            g.set(push.to, push.o).set(push.to + Coordinate.left, '.')
+                        )
+                    else -> throw IllegalStateException()
+                }
+            }
+        tailrec fun pushH(o: Char, to: Coordinate<Int>, g: Grid<Char>): Grid<Char> = when (g.get(to)) {
+            '.' -> g.set(to, o)
+            '#' -> grid
+            '[' -> pushH('[', to + direction, g.set(to, o))
+            ']' -> pushH(']', to + direction, g.set(to, o))
+            else -> throw IllegalStateException()
+        }
+        val (robot) = grid.findAll('@')
+        val r = if (direction.y == 0) pushH('@', robot + direction, grid.set(robot, '.'))
+            else pushV(listOf(Push('@', robot + direction)), grid.set(robot, '.'))
+//        println("after move: $direction")
+//        r.print()
+        return r
+    }
+
     fun run1(input: Input): Int =
         input.movements.fold(input.grid, this::moveRobot)
             .findAll('O').sumOf { 100 * it.y + it.x }
 
-    fun run2(input: Input): Int = 0
+    fun run2(input: Input): Int {
+        val g = input.movements.fold(expand(input.grid), this::moveRobot2)
+        g.print()
+        return g.findAll('[').sumOf {
+//            100 * it.y + min(it.x, input.grid.width() - it.x - 1)
+            100 * it.y + it.x
+        }
+    }
 
 }
 
