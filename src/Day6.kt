@@ -3,59 +3,20 @@ import Day6.run1
 import Day6.run2
 
 object Day6 {
-    fun <E> List<E>.update(index: Int, e: E): List<E> =
-        this.take(index) + e + this.drop(index + 1)
+    fun parse(input: String): Grid<Char> = Grid.parseCharGrid(input)
 
-    data class Coordinate(val x: Int, val y: Int) {
-        operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
-        fun directionChar(): Char = when(this) {
-            Coordinate(-1, 0) -> '<'
-            Coordinate(1, 0) -> '>'
-            Coordinate(0, -1) -> '^'
-            Coordinate(0, 1) -> 'v'
-            else -> 'X'
-        }
+    fun Coordinate<Int>.directionChar(): Char = when(this) {
+        Coordinate(-1, 0) -> '<'
+        Coordinate(1, 0) -> '>'
+        Coordinate(0, -1) -> '^'
+        Coordinate(0, 1) -> 'v'
+        else -> 'X'
     }
-    data class Grid<E>(val m: List<List<E>>) {
-        fun width(): Int = m.first().size
-        fun height(): Int = m.size
-
-        fun get(c: Coordinate): E = m[c.y][c.x]
-        fun getSafe(c: Coordinate): E? = m.getOrNull(c.y)?.getOrNull(c.x)
-
-        fun set(c: Coordinate, value: E): Grid<E> =
-            Grid(m.update(c.y, m[c.y].update(c.x, value)))
-
-        fun allCoordinates(): List<Coordinate> =
-            0.rangeUntil(height()).flatMap { y ->
-                0.rangeUntil(width()).map { x ->
-                    Coordinate(x, y)
-                }
-            }
-
-        fun isInside(c: Coordinate): Boolean =
-            c.x >= 0 && c.x < width() && c.y >= 0 && c.y < height()
-
-        fun findAll(e: E): List<Coordinate> =
-            findAll { it == e }
-        fun findAll(f: (E) -> Boolean): List<Coordinate> =
-            allCoordinates().filter { f(get(it)) }
-    }
-
-    val allDirections = listOf(
-        Coordinate(-1, -1), Coordinate(-1, 0), Coordinate(-1, 1),
-        Coordinate(0, -1), Coordinate(0, 1),
-        Coordinate(1, -1), Coordinate(1, 0), Coordinate(1, 1)
-    )
-
-    fun parse(input: String): Grid<Char> =
-        Grid(input.lines().filter { it.isNotBlank() }.map { it.toCharArray().toList() })
-
     const val free = '.'
     val visited = "X<>^v".toCharArray()
     const val obstacle = '#'
 
-    data class Guard(val location: Coordinate, val direction: Coordinate) {
+    data class Guard(val location: Coordinate<Int>, val direction: Coordinate<Int>) {
         fun turnRight(): Guard {
             val newDirection = when (direction) {
                 Coordinate(0, -1) -> Coordinate(1, 0)
@@ -66,7 +27,7 @@ object Day6 {
             }
             return Guard(location, newDirection)
         }
-        fun locationAhead(): Coordinate = location + direction
+        fun locationAhead(): Coordinate<Int> = location + direction
         fun stepForward(): Guard = Guard(location + direction, direction)
     }
 

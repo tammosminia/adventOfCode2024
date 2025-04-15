@@ -14,7 +14,7 @@ object Day14 {
     data class RobotRoom(val robots: List<Robot>, val width: Int, val height: Int) {
         fun moveRobot(r: Robot): Robot {
             val dest = r.pos + r.velocity
-            return Robot(Coordinate(modulo(dest.x, width), modulo(dest.y, height)), r.velocity)
+            return Robot(Coordinate(dest.x.mod(width), dest.y.mod(height)), r.velocity)
         }
 
         fun move(): RobotRoom = RobotRoom(robots.map(this::moveRobot), width, height)

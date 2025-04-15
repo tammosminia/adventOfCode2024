@@ -3,62 +3,15 @@ import Day8.run1
 import Day8.run2
 
 object Day8 {
-    fun <E> List<E>.update(index: Int, e: E): List<E> =
-        this.take(index) + e + this.drop(index + 1)
-
-    data class Coordinate(val x: Int, val y: Int) {
-        operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
-        operator fun minus(c: Coordinate): Coordinate = Coordinate(x - c.x, y - c.y)
-    }
-    data class Grid<E>(val m: List<List<E>>) {
-        companion object {
-            val allDirections = listOf(
-                Coordinate(-1, -1), Coordinate(-1, 0), Coordinate(-1, 1),
-                Coordinate(0, -1), Coordinate(0, 1),
-                Coordinate(1, -1), Coordinate(1, 0), Coordinate(1, 1)
-            )
-
-            fun <E> parse(input: String, parseLine: (String) -> List<E>): Grid<E> =
-                Grid(input.lines().filter { it.isNotBlank() }.map(parseLine))
-
-            fun parseCharGrid(input: String): Grid<Char> =
-                parse(input) { it.toCharArray().toList() }
-        }
-
-        fun width(): Int = m.first().size
-        fun height(): Int = m.size
-
-        fun get(c: Coordinate): E = m[c.y][c.x]
-        fun getSafe(c: Coordinate): E? = m.getOrNull(c.y)?.getOrNull(c.x)
-
-        fun set(c: Coordinate, value: E): Grid<E> =
-            Grid(m.update(c.y, m[c.y].update(c.x, value)))
-
-        fun allCoordinates(): List<Coordinate> =
-            0.rangeUntil(height()).flatMap { y ->
-                0.rangeUntil(width()).map { x ->
-                    Coordinate(x, y)
-                }
-            }
-
-        fun isInside(c: Coordinate): Boolean =
-            c.x >= 0 && c.x < width() && c.y >= 0 && c.y < height()
-
-        fun findAll(e: E): List<Coordinate> =
-            findAll { it == e }
-        fun findAll(f: (E) -> Boolean): List<Coordinate> =
-            allCoordinates().filter { f(get(it)) }
-    }
-
     fun parse(input: String): Grid<Char> = Grid.parseCharGrid(input)
 
     // geeft alleen de antiNode achter a2, moet beide kanten op worden aangeroepen
-    fun antiNode1(a1: Coordinate, a2: Coordinate): Coordinate {
+    fun antiNode1(a1: Coordinate<Int>, a2: Coordinate<Int>): Coordinate<Int> {
         val diff = a2 - a1
         return a2 + diff
     }
 
-    fun createTowerMap(grid: Grid<Char>): Map<Char, List<Coordinate>> =
+    fun createTowerMap(grid: Grid<Char>): Map<Char, List<Coordinate<Int>>> =
         grid.allCoordinates()
             .groupBy { grid.get(it) }
             .minus('.')
@@ -73,9 +26,9 @@ object Day8 {
         }.filter(input::isInside).toSet().size
 
     // geeft alleen de antiNode achter (en op) a2, moet beide kanten op worden aangeroepen
-    fun antiNodes2(grid: Grid<Char>, a1: Coordinate, a2: Coordinate): List<Coordinate> {
+    fun antiNodes2(grid: Grid<Char>, a1: Coordinate<Int>, a2: Coordinate<Int>): List<Coordinate<Int>> {
         val diff = a2 - a1
-        fun rec(c: Coordinate): List<Coordinate> =
+        fun rec(c: Coordinate<Int>): List<Coordinate<Int>> =
             if (grid.isInside(c))
                 listOf(c) + rec(c + diff)
             else emptyList()

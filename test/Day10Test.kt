@@ -19,8 +19,8 @@ class Day10Test {
     val input = parse(sample)
     @Test
     fun test1() {
-        assertEquals(1, trailheadScore(input, Day10.Coordinate(2, 5)))
-        assertEquals(3, trailheadScore(input, Day10.Coordinate(5, 5)))
+        assertEquals(1, trailheadScore(input, Coordinate(2, 5)))
+        assertEquals(3, trailheadScore(input, Coordinate(5, 5)))
         assertEquals(36, run1(input))
     }
     @Test

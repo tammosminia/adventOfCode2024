@@ -3,72 +3,13 @@ import Day12.run1
 import Day12.run2
 
 object Day12 {
-    fun <E> List<E>.update(index: Int, e: E): List<E> =
-        this.take(index) + e + this.drop(index + 1)
-
-    data class Coordinate(val x: Int, val y: Int) {
-        companion object {
-            val left = Coordinate(-1, 0)
-            val up = Coordinate(0, -1)
-            val down = Coordinate(0, 1)
-            val right = Coordinate(1, 0)
-            val straightDirections = setOf(left, up, down, right)
-            val diagonalDirections = setOf(Coordinate(-1, -1), Coordinate(-1, 1), Coordinate(1, -1), Coordinate(1, 1))
-            val relevantDirections = straightDirections
-        }
-        operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
-        operator fun minus(c: Coordinate): Coordinate = Coordinate(x - c.x, y - c.y)
-    }
-    data class Grid<E>(val m: List<List<E>>) {
-        companion object {
-            fun <E> parse(input: String, parseLine: (String) -> List<E>): Grid<E> =
-                Grid(input.lines().filter { it.isNotBlank() }.map(parseLine))
-
-            fun parseCharGrid(input: String): Grid<Char> =
-                parse(input) { it.toCharArray().toList() }
-        }
-
-        fun width(): Int = m.first().size
-        fun height(): Int = m.size
-
-        fun get(c: Coordinate): E = m[c.y][c.x]
-        fun getSafe(c: Coordinate): E? = m.getOrNull(c.y)?.getOrNull(c.x)
-
-        fun set(c: Coordinate, value: E): Grid<E> =
-            Grid(m.update(c.y, m[c.y].update(c.x, value)))
-
-        fun allCoordinates(): Set<Coordinate> =
-            0.rangeUntil(height()).flatMap { y ->
-                0.rangeUntil(width()).map { x ->
-                    Coordinate(x, y)
-                }
-            }.toSet()
-
-        fun isInside(c: Coordinate): Boolean =
-            c.x >= 0 && c.x < width() && c.y >= 0 && c.y < height()
-
-        fun findAll(e: E): List<Coordinate> =
-            findAll { it == e }
-        fun findAll(f: (E) -> Boolean): List<Coordinate> =
-            allCoordinates().filter { f(get(it)) }
-
-        fun <R> map(f: (E) -> R): Grid<R> =
-            Grid(m.map { it.map(f) })
-
-        fun neighbours(c: Coordinate): Set<Coordinate> =
-            Coordinate.relevantDirections
-                .map { c + it }
-                .filter { isInside(it) }
-                .toSet()
-    }
-
     fun parse(input: String): Grid<Char> = Grid.parseCharGrid(input)
 
-    data class Region(val label: Char, val plots: Set<Coordinate>) {
+    data class Region(val label: Char, val plots: Set<Coordinate<Int>>) {
         fun area(): Int = plots.size
         fun perimeter(grid: Grid<Char>): Int =
             plots.sumOf { plot ->
-                4 - grid.neighbours(plot).count(plots::contains)
+                4 - grid.neighbours(plot, Coordinate.straightDirections).count(plots::contains)
             }
         fun fencePrice(grid: Grid<Char>): Int =
             area() * perimeter(grid)
@@ -91,14 +32,14 @@ object Day12 {
     }
 
     fun splitRegions(grid: Grid<Char>): Set<Region> {
-        tailrec fun completeRegion(label: Char, found: Set<Coordinate>): Region {
-            val toAdd = found.flatMap { grid.neighbours(it) }
+        tailrec fun completeRegion(label: Char, found: Set<Coordinate<Int>>): Region {
+            val toAdd = found.flatMap { grid.neighbours(it, Coordinate.straightDirections) }
                 .filterNot { found.contains(it) }
                 .filter { label == grid.get(it) }
             return if (toAdd.isEmpty()) Region(label, found) else completeRegion(label, found + toAdd)
         }
 
-        tailrec fun rec(todo: Set<Coordinate>, regions: Set<Region> = emptySet()): Set<Region> =
+        tailrec fun rec(todo: Set<Coordinate<Int>>, regions: Set<Region> = emptySet()): Set<Region> =
             if (todo.isEmpty()) regions
             else {
                 val firstPlot = todo.first()

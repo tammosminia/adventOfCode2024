@@ -1,8 +1,6 @@
 import Day5.parse
 import Day5.run1
 import Day5.run2
-import kotlin.math.max
-import kotlin.math.min
 
 object Day5 {
     data class Rule(val before: Int, val after: Int)
@@ -20,17 +18,6 @@ object Day5 {
 
     fun parsePages(s: String): List<Int> =
         s.split(',').map(String::toInt)
-
-    fun <E> List<E>.splitAtElement(e: E): List<List<E>> {
-        when(val i = indexOf(e)) {
-            -1 -> return listOf(this)
-            else -> {
-                val first = this.take(i)
-                val rest = this.drop(i + 1)
-                return listOf(first) + rest.splitAtElement(e)
-            }
-        }
-    }
 
     fun run1(input: Input): Int =
         input.prints.filter { isCorrectOrder(it, input.rules) }
@@ -66,12 +53,6 @@ object Day5 {
                 }
             }
         }
-
-    fun <E> List<E>.swap(index1: Int, index2: Int): List<E> {
-        val i1 = min(index1, index2)
-        val i2 = max(index1, index2)
-        return this.take(i1) + this[i2] + this.subList(i1 + 1, i2) + this[i1] + this.drop(i2 + 1)
-    }
 }
 
 fun main() {

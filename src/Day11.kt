@@ -3,8 +3,6 @@ import Day11.run1
 import Day11.run2
 
 object Day11 {
-    fun Int.isEven() = this % 2 == 0
-
     fun parse(input: String): List<Long> =
         input.split(" ").map { it.toLong() }
 

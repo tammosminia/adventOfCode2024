@@ -4,7 +4,6 @@ import Day9.parse
 import Day9.printDebug
 import Day9.run1
 import Day9.run2
-import Day9.swap
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

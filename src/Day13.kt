@@ -4,13 +4,7 @@ import Day13.run2
 
 object Day13 {
 
-    data class Coordinate(val x: Long, val y: Long) {
-        operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
-        operator fun minus(c: Coordinate): Coordinate = Coordinate(x - c.x, y - c.y)
-        operator fun times(i: Long): Coordinate = Coordinate(x * i, y * i)
-    }
-
-    data class Machine(val buttonA: Coordinate, val buttonB: Coordinate, val prize: Coordinate) {
+    data class Machine(val buttonA: Coordinate<Long>, val buttonB: Coordinate<Long>, val prize: Coordinate<Long>) {
         companion object {
             fun parse(lines: List<String>): Machine {
                 val (a, b, p) = lines.map { line ->

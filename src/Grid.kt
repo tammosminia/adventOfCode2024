@@ -43,9 +43,9 @@ data class Grid<E>(val m: List<List<E>>) {
     fun <R> map(f: (E) -> R): Grid<R> =
         Grid(m.map { it.map(f) })
 
-    fun neighbours(c: Coordinate<Int>): Set<Coordinate<Int>> =
-        Coordinate.relevantDirections
-            .map { c + it }
+    //TODO: how to make this also work for Long?
+    fun neighbours(c: Coordinate<Int>, directions: Set<Coordinate<Int>>): Set<Coordinate<Int>> =
+        directions.map { c + it }
             .filter { isInside(it) }
             .toSet()
 

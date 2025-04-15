@@ -3,40 +3,14 @@ import Day4.run1
 import Day4.run2
 
 object Day4 {
-    data class Coordinate(val x: Int, val y: Int) {
-        operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
-    }
-    data class Grid<E>(val m: List<List<E>>) {
-        fun width(): Int = m.first().size
-        fun height(): Int = m.size
-
-        fun get(c: Coordinate): E = m[c.y][c.x]
-
-        fun getSafe(c: Coordinate): E? = m.getOrNull(c.y)?.getOrNull(c.x)
-
-        fun allCoordinates(): List<Coordinate> =
-            0.rangeUntil(height()).flatMap { y ->
-                0.rangeUntil(width()).map { x ->
-                    Coordinate(x, y)
-                }
-            }
-    }
-
-    val allDirections = listOf(
-        Coordinate(-1, -1), Coordinate(-1, 0), Coordinate(-1, 1),
-        Coordinate(0, -1), Coordinate(0, 1),
-        Coordinate(1, -1), Coordinate(1, 0), Coordinate(1, 1)
-        )
-
-    fun parse(input: String): Grid<Char> =
-        Grid(input.lines().map { it.toCharArray().toList() })
+    fun parse(input: String): Grid<Char> = Grid.parseCharGrid(input)
 
     fun run1(input: Grid<Char>): Int =
         input.allCoordinates().sumOf { c ->
-            allDirections.count { isWordAt("XMAS", input, c, it) }
+            Coordinate.allDirections.count { isWordAt("XMAS", input, c, it) }
         }
 
-    fun isWordAt(word: String, g: Grid<Char>, c: Coordinate, direction: Coordinate): Boolean =
+    fun isWordAt(word: String, g: Grid<Char>, c: Coordinate<Int>, direction: Coordinate<Int>): Boolean =
         if(word.isEmpty())
             true
         else
@@ -48,9 +22,8 @@ object Day4 {
     private val line1 = listOf(Coordinate(-1, -1), Coordinate(1, 1))
     private val line2 = listOf(Coordinate(-1, 1), Coordinate(1, -1))
     private val ms = listOf('M', 'S')
-    fun crossAt(g: Grid<Char>, c: Coordinate): Boolean =
+    fun crossAt(g: Grid<Char>, c: Coordinate<Int>): Boolean =
         g.getSafe(c) == 'A' && line1.map { g.getSafe(c + it) }.containsAll(ms) && line2.map { g.getSafe(c + it) }.containsAll(ms)
-
 
 }
 

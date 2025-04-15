@@ -3,55 +3,6 @@ import Day10.run1
 import Day10.run2
 
 object Day10 {
-    fun <E> List<E>.update(index: Int, e: E): List<E> =
-        this.take(index) + e + this.drop(index + 1)
-
-    data class Coordinate(val x: Int, val y: Int) {
-        companion object {
-            val straightDirections = setOf(Coordinate(-1, 0), Coordinate(0, -1), Coordinate(0, 1), Coordinate(1, 0))
-            val diagonalDirections = setOf(Coordinate(-1, -1), Coordinate(-1, 1), Coordinate(1, -1), Coordinate(1, 1))
-            val allDirections = straightDirections + diagonalDirections
-        }
-        operator fun plus(c: Coordinate): Coordinate = Coordinate(x + c.x, y + c.y)
-        operator fun minus(c: Coordinate): Coordinate = Coordinate(x - c.x, y - c.y)
-    }
-    data class Grid<E>(val m: List<List<E>>) {
-        companion object {
-            fun <E> parse(input: String, parseLine: (String) -> List<E>): Grid<E> =
-                Grid(input.lines().filter { it.isNotBlank() }.map(parseLine))
-
-            fun parseCharGrid(input: String): Grid<Char> =
-                parse(input) { it.toCharArray().toList() }
-        }
-
-        fun width(): Int = m.first().size
-        fun height(): Int = m.size
-
-        fun get(c: Coordinate): E = m[c.y][c.x]
-        fun getSafe(c: Coordinate): E? = m.getOrNull(c.y)?.getOrNull(c.x)
-
-        fun set(c: Coordinate, value: E): Grid<E> =
-            Grid(m.update(c.y, m[c.y].update(c.x, value)))
-
-        fun allCoordinates(): List<Coordinate> =
-            0.rangeUntil(height()).flatMap { y ->
-                0.rangeUntil(width()).map { x ->
-                    Coordinate(x, y)
-                }
-            }
-
-        fun isInside(c: Coordinate): Boolean =
-            c.x >= 0 && c.x < width() && c.y >= 0 && c.y < height()
-
-        fun findAll(e: E): List<Coordinate> =
-            findAll { it == e }
-        fun findAll(f: (E) -> Boolean): List<Coordinate> =
-            allCoordinates().filter { f(get(it)) }
-
-        fun <R> map(f: (E) -> R): Grid<R> =
-            Grid(m.map { it.map(f) })
-    }
-
     @JvmInline value class Height(val value: Int) {
         fun inc(by: Int = 1) = Height(value + by)
     }
@@ -59,8 +10,8 @@ object Day10 {
     fun parse(input: String): Grid<Height> =
         Grid.parseCharGrid(input).map { Height(it.digitToInt()) }
 
-    fun trailheadScore(g: Grid<Height>, trailhead: Coordinate): Int {
-        fun rec(c: Coordinate): Set<Coordinate> {
+    fun trailheadScore(g: Grid<Height>, trailhead: Coordinate<Int>): Int {
+        fun rec(c: Coordinate<Int>): Set<Coordinate<Int>> {
             val height = g.get(c)
             return if (height.value == 9) setOf(c)
                 else Coordinate.straightDirections
@@ -75,8 +26,8 @@ object Day10 {
     fun run1(input: Grid<Height>): Int =
         input.findAll(Height(0)).sumOf { trailheadScore(input, it) }
 
-    fun trailheadRating(g: Grid<Height>, trailhead: Coordinate): Int {
-        fun rec(c: Coordinate): Int {
+    fun trailheadRating(g: Grid<Height>, trailhead: Coordinate<Int>): Int {
+        fun rec(c: Coordinate<Int>): Int {
             val height = g.get(c)
             return if (height.value == 9) 1
             else Coordinate.straightDirections
