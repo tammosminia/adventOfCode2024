@@ -34,9 +34,4 @@ fun <E> List<E>.swap(index1: Int, index2: Int, amount: Int = 1): List<E> {
     return take(i1) + subList(i2, i2 + amount) + subList(i1 + amount, i2) + subList(i1, i1 + amount) + drop(i2 + amount)
 }
 
-
-
 fun Int.isEven() = this % 2 == 0
-
-// rem gives back negative values. This makes sure it falls inside the window 0..<x TODO: blog, of had ik dat al gedaan?
-fun Int.mod(x: Int) = (this % x + x) % x
