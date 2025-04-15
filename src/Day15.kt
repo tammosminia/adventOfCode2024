@@ -13,28 +13,21 @@ object Day15 {
     }
 
     fun moveRobot(grid: Grid<Char>, direction: Coordinate<Int>): Grid<Char> {
-        val (robot) = grid.findAll('@')
-        return when (grid.get(robot + direction)) {
-            '.' -> grid.set(robot, '.').set(robot + direction, '@')
+        tailrec fun push(o: Char, to: Coordinate<Int>, g: Grid<Char>): Grid<Char> = when (g.get(to)) {
+            '.' -> g.set(to, o)
             '#' -> grid
-            'O' -> {
-                tailrec fun push(to: Coordinate<Int>, o: Char, successGrid: Grid<Char>): Grid<Char> = when (grid.get(to)) {
-                    '.' -> successGrid.set(to, o)
-                    '#' -> grid
-                    'O' -> push(to + direction, 'O', successGrid.set(to, o))
-                    else -> throw IllegalStateException()
-                }
-                push(robot + direction + direction, 'O', grid.set(robot, '.').set(robot + direction, '@'))
-            }
+            'O' -> push('O', to + direction, g.set(to, o))
             else -> throw IllegalStateException()
         }
+        val (robot) = grid.findAll('@')
+        return push('@', robot + direction, grid.set(robot, '.'))
     }
 
     fun run1(input: Input): Int =
         input.movements.fold(input.grid, this::moveRobot)
             .findAll('O').sumOf { 100 * it.y + it.x }
 
-    tailrec fun run2(input: Input): Int = 0
+    fun run2(input: Input): Int = 0
 
 }
 
