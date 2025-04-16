@@ -22,6 +22,22 @@ data class Coordinate<T>(val x: T, val y: T) {
             else -> null
         }
     }
+
+    fun turnLeft(): Coordinate<Int> = when(this) {
+        left -> down
+        up -> left
+        down -> right
+        right -> up
+        else -> throw IllegalArgumentException("Invalid direction")
+    }
+
+    fun turnRight(): Coordinate<Int> = when(this) {
+        left -> up
+        up -> right
+        down -> left
+        right -> down
+        else -> throw IllegalArgumentException("Invalid direction")
+    }
 //    operator fun plus(c: Coordinate<Int>): Coordinate<T> = Coordinate(x.plusNumber(c.x), y.plusNumber(c.y))
 //    operator fun minus(c: Coordinate): Coordinate<T> = Coordinate(x - c.x, y - c.y)
 }
