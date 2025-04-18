@@ -1,3 +1,5 @@
+package typeclass
+
 object Coordinate3extension {
 
     data class Coordinate<T>(val x: T, val y: T)

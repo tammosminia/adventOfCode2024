@@ -1,3 +1,5 @@
+package typeclass
+
 object Coordinate1interface {
     interface Coordinate<T> {
         val x: T

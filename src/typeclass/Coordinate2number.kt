@@ -1,6 +1,4 @@
-import Coordinate2number.d
-import Coordinate2number.i
-import Coordinate2number.l
+package typeclass
 
 object Coordinate2number {
     fun <T: Number> Number.add(other: T): T = when(other) {
@@ -20,5 +18,5 @@ object Coordinate2number {
 }
 
 fun main() {
-    println("$i $d $l")
+    println("${Coordinate2number.i} ${Coordinate2number.d} ${Coordinate2number.l}")
 }

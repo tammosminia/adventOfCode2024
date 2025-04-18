@@ -1,6 +1,4 @@
-import Coordinate4typeclass.i
-import Coordinate4typeclass.d
-import Coordinate4typeclass.c
+package typeclass
 
 object Coordinate4typeclass {
     interface Addable<T> {
@@ -50,5 +48,5 @@ object Coordinate4typeclass {
 }
 
 fun main() {
-    println("$i $d $c")
+    println("${Coordinate4typeclass.i} ${Coordinate4typeclass.d} ${Coordinate4typeclass.c}")
 }

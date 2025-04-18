@@ -1,6 +1,4 @@
-import Coordinate5addFunction.i
-import Coordinate5addFunction.d
-import Coordinate5addFunction.c
+package typeclass
 
 object Coordinate5addFunction {
     data class Coordinate<T>(val x: T, val y: T, val addF: (T, T) -> T) {
@@ -23,5 +21,5 @@ object Coordinate5addFunction {
 }
 
 fun main() {
-    println("$i $d $c")
+    println("${Coordinate5addFunction.i} ${Coordinate5addFunction.d} ${Coordinate5addFunction.c}")
 }
