@@ -9,7 +9,7 @@ object Day13 {
             fun parse(lines: List<String>): Machine {
                 val (a, b, p) = lines.map { line ->
                     val (x, y) = Regex("\\d+").findAll(line).map { it.value.toLong() }.toList()
-                    Coordinate(x, y)
+                    Coordinate.create(x, y)
                 }
                 return Machine(a, b, p)
             }
@@ -66,7 +66,7 @@ object Day13 {
         val keep = 100000
         val timesE = (addFor2 - keep) / eAmount
         val toAdd = addFor2 - eAmount * timesE
-        val newMachine = m.copy(prize = m.prize + Coordinate(toAdd, toAdd))
+        val newMachine = m.copy(prize = m.prize + Coordinate.create(toAdd, toAdd))
         println("solving $newMachine")
         return solveMachine(newMachine, 10000)?.let { Solution(it.a + e.a, it.b + e.b) }
     }

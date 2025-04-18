@@ -1,7 +1,6 @@
 import Day15.parse
 import Day15.run1
 import Day15.run2
-import kotlin.math.min
 
 object Day15 {
     data class Input(val grid: Grid<Char>, val movements: List<Coordinate<Int>>)

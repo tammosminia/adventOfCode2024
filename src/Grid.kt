@@ -28,7 +28,7 @@ data class Grid<E>(val m: List<List<E>>) {
     fun allCoordinates(): Set<Coordinate<Int>> =
         0.rangeUntil(height()).flatMap { y ->
             0.rangeUntil(width()).map { x ->
-                Coordinate(x, y)
+                Coordinate.create(x, y)
             }
         }.toSet()
 

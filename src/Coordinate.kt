@@ -1,17 +1,31 @@
-//fun Number.plusNumber(other: Int): Number =
-//    other + this.toInt()
-//
-//fun Number.plusNumber(other: Long): Number =
-//    other + this.toLong()
-
-data class Coordinate<T>(val x: T, val y: T) {
+fun interface Addition<T> {
+    fun plus(a: T, b: T): T
+}
+fun interface Subtraction<T> {
+    fun minus(a: T, b: T): T
+}
+fun interface Multiplication<T> {
+    fun times(a: T, b: T): T
+}
+interface SimpleMath<T> : Addition<T>, Subtraction<T>, Multiplication<T> {
     companion object {
-        val left = Coordinate<Int>(-1, 0)
-        val up = Coordinate<Int>(0, -1)
-        val down = Coordinate<Int>(0, 1)
-        val right = Coordinate<Int>(1, 0)
+        fun <T> create(plusF: Addition<T>, minF: Subtraction<T>, mulF: Multiplication<T>): SimpleMath<T> = object : SimpleMath<T> {
+            override fun plus(a: T, b: T): T = plusF.plus(a, b)
+            override fun minus(a: T, b: T): T = minF.minus(a, b)
+            override fun times(a: T, b: T): T = mulF.times(a, b)
+        }
+    }
+}
+
+data class Coordinate<T>(val x: T, val y: T, val math: SimpleMath<T>) {
+    override fun toString(): String = "Coordinate($x, $y)"
+    companion object {
+        val left = Coordinate.create(-1, 0)
+        val up = Coordinate.create(0, -1)
+        val down = Coordinate.create(0, 1)
+        val right = Coordinate.create(1, 0)
         val straightDirections = setOf(left, up, down, right)
-        val diagonalDirections = setOf(Coordinate<Int>(-1, -1), Coordinate<Int>(-1, 1), Coordinate<Int>(1, -1), Coordinate<Int>(1, 1))
+        val diagonalDirections = setOf(Coordinate.create(-1, -1), Coordinate.create(-1, 1), Coordinate.create(1, -1), Coordinate.create(1, 1))
         val allDirections = straightDirections + diagonalDirections
 
         fun parseDirection(c: Char): Coordinate<Int>? = when (c) {
@@ -38,20 +52,14 @@ data class Coordinate<T>(val x: T, val y: T) {
         right -> down
         else -> throw IllegalArgumentException("Invalid direction")
     }
-//    operator fun plus(c: Coordinate<Int>): Coordinate<T> = Coordinate(x.plusNumber(c.x), y.plusNumber(c.y))
-//    operator fun minus(c: Coordinate): Coordinate<T> = Coordinate(x - c.x, y - c.y)
+    operator fun plus(c: Coordinate<T>): Coordinate<T> = Coordinate<T>(math.plus(x, c.x), math.plus(y, c.y), math)
+    operator fun minus(c: Coordinate<T>): Coordinate<T> = Coordinate<T>(math.minus(x, c.x), math.minus(y, c.y), math)
+    operator fun times(t: T): Coordinate<T> = Coordinate<T>(math.times(x, t), math.times(y, t), math)
 }
 
-//TODO: blog mimic typeclasses with extension functions
-// @JvmName is necessary to prevent Kotlin: Platform declaration clash: The following declarations have the same JVM signature (plus(LCoordinate;LCoordinate;)LCoordinate;):
-//    fun Coordinate<Int>.plus(other: Coordinate<Int>): Coordinate<Int> defined in root package
-//    fun Coordinate<Long>.plus(other: Coordinate<Long>): Coordinate<Long> defined in root package
-// The generic is erased by jvm type erasure :(
-@JvmName("CoordinatePlusInt") operator fun Coordinate<Int>.plus(other: Coordinate<Int>): Coordinate<Int> = Coordinate(x + other.x, y + other.y)
-@JvmName("CoordinatePlusLong") operator fun Coordinate<Long>.plus(other: Coordinate<Long>): Coordinate<Long> = Coordinate(x + other.x, y + other.y)
-
-@JvmName("CoordinateMinusInt") operator fun Coordinate<Int>.minus(other: Coordinate<Int>) = Coordinate(x - other.x, y - other.y)
-@JvmName("CoordinateMinusLong") operator fun Coordinate<Long>.minus(other: Coordinate<Long>) = Coordinate(x - other.x, y - other.y)
-
-operator fun Coordinate<Int>.times(t: Int) = Coordinate(x * t, y * t)
-operator fun Coordinate<Long>.times(t: Long) = Coordinate(x * t, y * t)
+val intMath = SimpleMath.create(Int::plus, Int::minus, Int::times)
+fun Coordinate.Companion.create(x: Int, y: Int): Coordinate<Int> = Coordinate(x, y, intMath)
+val longMath = SimpleMath.create(Long::plus, Long::minus, Long::times)
+fun Coordinate.Companion.create(x: Long, y: Long): Coordinate<Long> = Coordinate(x, y, longMath)
+val doubleMath = SimpleMath.create(Double::plus, Double::minus, Double::times)
+fun Coordinate.Companion.create(x: Double, y: Double): Coordinate<Double> = Coordinate(x, y, doubleMath)

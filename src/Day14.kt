@@ -7,14 +7,14 @@ object Day14 {
         companion object {
             fun parse(line: String): Robot {
                 val (x, y, dx, dy) = Regex("-?\\d+").findAll(line).map { it.value.toInt() }.toList()
-                return Robot(Coordinate(x, y), Coordinate(dx, dy))
+                return Robot(Coordinate.create(x, y), Coordinate.create(dx, dy))
             }
         }
     }
     data class RobotRoom(val robots: List<Robot>, val width: Int, val height: Int) {
         fun moveRobot(r: Robot): Robot {
             val dest = r.pos + r.velocity
-            return Robot(Coordinate(dest.x.mod(width), dest.y.mod(height)), r.velocity)
+            return Robot(Coordinate.create(dest.x.mod(width), dest.y.mod(height)), r.velocity)
         }
 
         fun move(): RobotRoom = RobotRoom(robots.map(this::moveRobot), width, height)

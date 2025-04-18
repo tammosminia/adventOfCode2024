@@ -21,7 +21,7 @@ class Day14Test {
     val input1 = parse(sample1, 11, 7)
     @Test
     fun test1() {
-        assertEquals(Coordinate(2, 5), input1.moveRobot(input1.robots[7]).pos)
+        assertEquals(Coordinate.create(2, 5), input1.moveRobot(input1.robots[7]).pos)
         assertEquals(12, run1(input1))
     }
 }

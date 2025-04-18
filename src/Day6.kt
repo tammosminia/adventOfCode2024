@@ -6,10 +6,10 @@ object Day6 {
     fun parse(input: String): Grid<Char> = Grid.parseCharGrid(input)
 
     fun Coordinate<Int>.directionChar(): Char = when(this) {
-        Coordinate(-1, 0) -> '<'
-        Coordinate(1, 0) -> '>'
-        Coordinate(0, -1) -> '^'
-        Coordinate(0, 1) -> 'v'
+        Coordinate.left -> '<'
+        Coordinate.right -> '>'
+        Coordinate.up -> '^'
+        Coordinate.down -> 'v'
         else -> 'X'
     }
     const val free = '.'
@@ -17,16 +17,7 @@ object Day6 {
     const val obstacle = '#'
 
     data class Guard(val location: Coordinate<Int>, val direction: Coordinate<Int>) {
-        fun turnRight(): Guard {
-            val newDirection = when (direction) {
-                Coordinate(0, -1) -> Coordinate(1, 0)
-                Coordinate(1, 0) -> Coordinate(0, 1)
-                Coordinate(0, 1) -> Coordinate(-1, 0)
-                Coordinate(-1, 0) -> Coordinate(0, -1)
-                else -> throw IllegalArgumentException("no diagonals")
-            }
-            return Guard(location, newDirection)
-        }
+        fun turnRight(): Guard = Guard(location, direction.turnRight())
         fun locationAhead(): Coordinate<Int> = location + direction
         fun stepForward(): Guard = Guard(location + direction, direction)
     }
@@ -51,7 +42,7 @@ object Day6 {
         val (guardLoc) = input.findAll('^')
         return State(
             input.set(guardLoc, free),
-            Guard(guardLoc, Coordinate(0, -1))
+            Guard(guardLoc, Coordinate.up)
         )
     }
 

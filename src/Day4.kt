@@ -19,8 +19,8 @@ object Day4 {
     fun run2(input: Grid<Char>): Int =
         input.allCoordinates().count { crossAt(input, it) }
 
-    private val line1 = listOf(Coordinate(-1, -1), Coordinate(1, 1))
-    private val line2 = listOf(Coordinate(-1, 1), Coordinate(1, -1))
+    private val line1 = listOf(Coordinate.create(-1, -1), Coordinate.create(1, 1))
+    private val line2 = listOf(Coordinate.create(-1, 1), Coordinate.create(1, -1))
     private val ms = listOf('M', 'S')
     fun crossAt(g: Grid<Char>, c: Coordinate<Int>): Boolean =
         g.getSafe(c) == 'A' && line1.map { g.getSafe(c + it) }.containsAll(ms) && line2.map { g.getSafe(c + it) }.containsAll(ms)

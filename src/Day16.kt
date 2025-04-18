@@ -5,26 +5,26 @@ import Day16.run2
 object Day16 {
     fun parse(input: String): Grid<Char> = Grid.parseCharGrid(input)
 
-    data class Path(val pos: Coordinate<Int>, val dir: Coordinate<Int>, val score: Int)
+//    data class Path(val pos: Coordinate<Int>, val dir: Coordinate<Int>, val score: Int)
 
-    fun solve(grid: Grid<Char>) {
-        fun nextMoves(p: Path): List<Path> =
-            listOf(
-                Path(p.pos, p.dir.turnLeft(), p.score + 1000),
-                Path(p.pos, p.dir.turnRight(), p.score + 1000)
-            ) + if (grid.get(p.pos + p.dir) == '#') emptyList() else listOf(Path(p.pos + p.dir, p.dir, p.score + 1))
-
-        //TODO: ordered list
-        fun rec(paths: List<Path>): Path =
-            paths.minBy { it.score }.let { path ->
-                if (grid.get(path.pos) == 'E') path
-                else
-            }
-    }
+//    fun solve(grid: Grid<Char>) {
+//        fun nextMoves(p: Path): List<Path> =
+//            listOf(
+//                Path(p.pos, p.dir.turnLeft(), p.score + 1000),
+//                Path(p.pos, p.dir.turnRight(), p.score + 1000)
+//            ) + if (grid.get(p.pos + p.dir) == '#') emptyList() else listOf(Path(p.pos + p.dir, p.dir, p.score + 1))
+//
+//        //TODO: ordered list
+//        fun rec(paths: List<Path>): Path =
+//            paths.minBy { it.score }.let { path ->
+//                if (grid.get(path.pos) == 'E') path
+//                else
+//            }
+//    }
 
     fun run1(input: Grid<Char>): Int = 0
 
-    fun run2(input: Input): Int = 0
+    fun run2(input: Grid<Char>): Int = 0
 
 }
 
