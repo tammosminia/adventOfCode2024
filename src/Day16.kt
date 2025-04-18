@@ -5,24 +5,40 @@ import Day16.run2
 object Day16 {
     fun parse(input: String): Grid<Char> = Grid.parseCharGrid(input)
 
-//    data class Path(val pos: Coordinate<Int>, val dir: Coordinate<Int>, val score: Int)
+    data class Path(val pos: Coordinate<Int>, val dir: Coordinate<Int>, val score: Int, val steps: List<Coordinate<Int>>)
 
-//    fun solve(grid: Grid<Char>) {
-//        fun nextMoves(p: Path): List<Path> =
-//            listOf(
-//                Path(p.pos, p.dir.turnLeft(), p.score + 1000),
-//                Path(p.pos, p.dir.turnRight(), p.score + 1000)
-//            ) + if (grid.get(p.pos + p.dir) == '#') emptyList() else listOf(Path(p.pos + p.dir, p.dir, p.score + 1))
-//
-//        //TODO: ordered list
-//        fun rec(paths: List<Path>): Path =
-//            paths.minBy { it.score }.let { path ->
-//                if (grid.get(path.pos) == 'E') path
-//                else
-//            }
-//    }
+    fun initialPath(grid: Grid<Char>): Path {
+        val (start) = grid.findAll('S')
+        return Path(start, Coordinate.right, 0, emptyList())
+    }
 
-    fun run1(input: Grid<Char>): Int = 0
+    fun solve(grid: Grid<Char>): Path {
+        fun considerTurn(dir: Coordinate<Int>, p: Path): Path? =
+            if (grid.get(p.pos + dir) == '#' || p.steps.contains(p.pos + dir)) null
+            else Path(p.pos, dir, p.score + 1000, p.steps)
+        fun considerAhead(p: Path): Path? =
+            if (grid.get(p.pos + p.dir) == '#' || p.steps.contains(p.pos + p.dir)) null
+            else Path(p.pos + p.dir, p.dir, p.score + 1, p.steps + p.pos)
+        fun nextMoves(p: Path): List<Path> =
+            listOfNotNull(
+                considerTurn(p.dir.turnLeft(), p),
+                considerTurn(p.dir.turnRight(), p),
+                considerAhead(p)
+            )
+
+        //TODO: ordered list
+        tailrec fun rec(paths: List<Path>): Path {
+            val path = paths.minBy { it.score }
+            val rest = paths.minus(path)
+            println("considering $path")
+            return if (grid.get(path.pos) == 'E') path
+            else rec(rest + nextMoves(path))
+        }
+
+        return rec(listOf(initialPath(grid)))
+    }
+
+    fun run1(input: Grid<Char>): Int = solve(input).score
 
     fun run2(input: Grid<Char>): Int = 0
 

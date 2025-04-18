@@ -43,14 +43,14 @@ class Day16Test {
     """.trimIndent()
     val input1 = parse(sample1)
     val input2 = parse(sample2)
-//    @Test
-//    fun test1() {
-//        assertEquals(7036, run1(input1))
-//        assertEquals(11048, run1(input2))
-//    }
-//    @Test
-//    fun test2() {
-////        assertEquals(9021, run2(input2))
-//        assertEquals(9021, run2(input1))
-//    }
+    @Test
+    fun test1() {
+        assertEquals(7036, run1(input1))
+        assertEquals(11048, run1(input2))
+    }
+    @Test
+    fun test2() {
+//        assertEquals(9021, run2(input2))
+        assertEquals(9021, run2(input1))
+    }
 }

@@ -12,7 +12,7 @@ object Coordinate1interface {
         override fun plus(c: Coordinate<Int>): Coordinate<Int> =
             CoordinateInt(x + c.x, y + c.y)
     }
-    fun Coordinate.Companion.create(x: Int, y: Int): Coordinate<Int> = CoordinateInt(x, y)
+    fun Coordinate.Companion.create(x: Int, y: Int) = CoordinateInt(x, y)
 
     data class CoordinateDouble(override val x: Double, override val y: Double): Coordinate<Double> {
         override fun plus(c: Coordinate<Double>): Coordinate<Double> =
