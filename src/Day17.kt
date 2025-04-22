@@ -1,0 +1,95 @@
+import Day17.parse
+import Day17.run1
+import Day17.run2
+import kotlin.Int
+
+object Day17 {
+    data class State(val pointer: Int, val a: Int, val b: Int, val c: Int, val output: List<Int>) {
+        fun isHalted(program: List<Int>) = pointer >= program.size
+    }
+    data class Input(val program: List<Int>, val state: State)
+
+    fun parse(input: String): Input {
+        val numbers = Regex("-?\\d+").findAll(input).map { it.value.toInt() }.toList()
+        return Input(numbers.drop(3), State(0, numbers[0], numbers[1], numbers[2], emptyList()))
+    }
+
+    fun oneInstruction(state: State, program: List<Int>): State {
+        fun instruction(): Int = program[state.pointer]
+        fun literalOperand(): Int = program[state.pointer + 1]
+        fun comboOperand(): Int {
+            val lit = literalOperand()
+            return when (lit) {
+                in 0..3 -> lit
+                4 -> state.a
+                5 -> state.b
+                6 -> state.c
+                else -> throw IllegalArgumentException("")
+            }
+        }
+        fun newState(newPointer: Int = state.pointer + 2, newA: Int = state.a, newB: Int = state.b, newC: Int  = state.c, newOutput: List<Int> = state.output): State =
+            State(pointer = newPointer, a = newA, b = newB, c = newC, output = newOutput)
+
+        return if (state.pointer >= program.size) state
+        else when (instruction()) {
+            0 -> { //adv
+                newState(newA = state.a / 2.pow(comboOperand()))
+            }
+            1 -> { //bxl
+                newState(newB = state.b.xor(literalOperand()))
+            }
+            2 -> { //bst
+                newState(newB = comboOperand().mod(8))
+            }
+            3 -> { //jnz
+                if (state.a == 0) newState() else newState(newPointer = literalOperand())
+            }
+            4 -> { //bxc
+                newState(newB = state.b.xor(state.c))
+            }
+            5 -> { //out
+                val out = comboOperand().mod(8)
+                newState(newOutput = state.output + out)
+            }
+            6 -> { //bdv
+                newState(newB = state.a / 2.pow(comboOperand()))
+            }
+            7 -> { //cdv
+                newState(newC = state.a / 2.pow(comboOperand()))
+            }
+            else -> throw IllegalArgumentException("bad instruction: ${instruction()}")
+        }
+    }
+
+    tailrec fun run(state: State, program: List<Int>): List<Int> =
+        if (state.isHalted(program)) state.output
+        else run(oneInstruction(state, program), program)
+
+    fun run1(input: Input): String =
+        run(input.state, input.program).joinToString(",") { it.toString() }
+
+    fun outputsProgram(state: State, program: List<Int>): Boolean =
+        run(state, program) == program
+
+    fun run2(input: Input): Int {
+        var a = 0
+        while (!outputsProgram(input.state.copy(a = a), input.program)) {
+            a += 1
+        }
+        return a
+    }
+
+}
+
+fun main() {
+    val input = """
+        Register A: 34615120
+        Register B: 0
+        Register C: 0
+
+        Program: 2,4,1,5,7,5,1,6,0,3,4,3,5,5,3,0
+    """.trimIndent()
+    val parsed = parse(input)
+    println(run1(parsed))
+    println(run2(parsed))
+}

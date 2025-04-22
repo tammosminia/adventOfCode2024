@@ -35,3 +35,5 @@ fun <E> List<E>.swap(index1: Int, index2: Int, amount: Int = 1): List<E> {
 }
 
 fun Int.isEven() = this % 2 == 0
+
+fun Int.pow(n: Int): Int = if (n == 0) 1 else this * pow(n - 1)
