@@ -30,8 +30,7 @@ object Day17 {
         fun newState(newPointer: Int = state.pointer + 2, newA: Int = state.a, newB: Int = state.b, newC: Int  = state.c, newOutput: List<Int> = state.output): State =
             State(pointer = newPointer, a = newA, b = newB, c = newC, output = newOutput)
 
-        return if (state.pointer >= program.size) state
-        else when (instruction()) {
+        return when (instruction()) {
             0 -> { //adv
                 newState(newA = state.a / 2.pow(comboOperand()))
             }
