@@ -4,17 +4,17 @@ import Day17.run2
 import kotlin.Int
 
 object Day17 {
-    data class State(val pointer: Int, val a: Int, val b: Int, val c: Int, val output: List<Int>) {
+    data class State(val pointer: Int, val a: Int, val b: Int, val c: Int) {
         fun isHalted(program: List<Int>) = pointer >= program.size
     }
     data class Input(val program: List<Int>, val state: State)
 
     fun parse(input: String): Input {
         val numbers = Regex("-?\\d+").findAll(input).map { it.value.toInt() }.toList()
-        return Input(numbers.drop(3), State(0, numbers[0], numbers[1], numbers[2], emptyList()))
+        return Input(numbers.drop(3), State(0, numbers[0], numbers[1], numbers[2]))
     }
 
-    fun oneInstruction(state: State, program: List<Int>): State {
+    fun oneInstruction(state: State, program: List<Int>): Pair<State, Int?> {
         fun instruction(): Int = program[state.pointer]
         fun literalOperand(): Int = program[state.pointer + 1]
         fun comboOperand(): Int {
@@ -27,8 +27,8 @@ object Day17 {
                 else -> throw IllegalArgumentException("")
             }
         }
-        fun newState(newPointer: Int = state.pointer + 2, newA: Int = state.a, newB: Int = state.b, newC: Int  = state.c, newOutput: List<Int> = state.output): State =
-            State(pointer = newPointer, a = newA, b = newB, c = newC, output = newOutput)
+        fun newState(newPointer: Int = state.pointer + 2, newA: Int = state.a, newB: Int = state.b, newC: Int  = state.c, output: Int? = null): Pair<State, Int?> =
+            Pair(State(pointer = newPointer, a = newA, b = newB, c = newC), output)
 
         return when (instruction()) {
             0 -> { //adv
@@ -47,8 +47,7 @@ object Day17 {
                 newState(newB = state.b.xor(state.c))
             }
             5 -> { //out
-                val out = comboOperand().mod(8)
-                newState(newOutput = state.output + out)
+                newState(output = comboOperand().mod(8))
             }
             6 -> { //bdv
                 newState(newB = state.a / 2.pow(comboOperand()))
@@ -60,9 +59,13 @@ object Day17 {
         }
     }
 
-    tailrec fun run(state: State, program: List<Int>): List<Int> =
-        if (state.isHalted(program)) state.output
-        else run(oneInstruction(state, program), program)
+    tailrec fun run(state: State, program: List<Int>, output: List<Int> = emptyList()): List<Int> =
+        if (state.isHalted(program)) output
+        else {
+            val (newState, out) = oneInstruction(state, program)
+            val newOutput = if (out != null) output + out else output
+            run(newState, program, newOutput)
+        }
 
     fun run1(input: Input): String =
         run(input.state, input.program).joinToString(",") { it.toString() }
