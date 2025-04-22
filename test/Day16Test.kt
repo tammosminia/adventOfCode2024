@@ -50,7 +50,7 @@ class Day16Test {
     }
     @Test
     fun test2() {
-//        assertEquals(9021, run2(input2))
-        assertEquals(9021, run2(input1))
+        assertEquals(45, run2(input1))
+        assertEquals(64, run2(input2))
     }
 }
