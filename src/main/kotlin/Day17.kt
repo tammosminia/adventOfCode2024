@@ -1,6 +1,9 @@
 import Day17.parse
 import Day17.run1
 import Day17.run2
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import kotlin.Int
 
 object Day17 {
@@ -89,15 +92,32 @@ object Day17 {
     }
 
     fun outputEquals(state: State, program: List<Int>, expected: List<Int>): Boolean =
-        runLazy(state, program).take(expected.size).toList() == expected
+        runLazy(state, program).equalsList(expected)
+
+    //returns lowest equal a
+    fun runMultipleEquals(state: State, program: List<Int>, allAs: List<Int>): Int? =
+        runBlocking {
+            allAs.map { a ->
+                async {
+                    if (outputEquals(state.copy(a = a), program, program)) a else null
+                }
+            }
+            .awaitAll()
+            .filterNotNull()
+            .minOrNull()
+        }
+
+    fun <E> allPerturbations(l: List<E >)
 
     fun run2(input: Input): Int {
         var a = 0
-        while (!outputEquals(input.state.copy(a = a), input.program, input.program)) {
-            println("a = $a")
-            a += 1
+        val parallellism = 32
+        while (true) {
+            val r = runMultipleEquals(input.state, input.program, a.rangeUntil(a + parallellism).toList())
+            if (r != null) return r
+            println("a=$a")
+            a += parallellism
         }
-        return a
     }
 
 }
@@ -114,3 +134,24 @@ fun main() {
     println(run1(parsed))
     println(run2(parsed))
 }
+
+//2,4,1,5,7,5,1,6,0,3,4,3,5,5,3,0
+//bst 4   b = a mod 8
+//bxl 5   b = b xor 5           b = (a mod 8) xor 5 = 0 of 2 (afhankelijk van eennalaatste a bit)
+//cdv 5   c = a / 2^b           c = a of a/4
+//bxl 6   b = b xor 6           b = 0 of 4
+//adv 3   a = a / 8             a = a / 8
+//bxc 3   b = b xor c           b = a of (4 xor a/4)
+//out 5   out b mod 8           out (a mod 8) of ((4 xor a/4) mod 8)
+//jnz 0   repeat until a == 0
+
+// 0 = 000
+// 1 = 001
+// 2 = 010
+// 3 = 011
+// 4 = 100
+// 5 = 101
+// 6 = 110
+// 7 = 111
+
+

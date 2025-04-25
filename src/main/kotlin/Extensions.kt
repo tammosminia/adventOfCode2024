@@ -34,6 +34,16 @@ fun <E> List<E>.swap(index1: Int, index2: Int, amount: Int = 1): List<E> {
     return take(i1) + subList(i2, i2 + amount) + subList(i1 + amount, i2) + subList(i1, i1 + amount) + drop(i2 + amount)
 }
 
+fun <T> Sequence<T>.equalsList(l: List<T>): Boolean {
+    val iterator = iterator()
+    for (item in l) {
+        if (!iterator.hasNext() || iterator.next() != item) {
+            return false
+        }
+    }
+    return !iterator.hasNext()
+}
+
 fun Int.isEven() = this % 2 == 0
 
 fun Int.pow(n: Int): Int = if (n == 0) 1 else this * pow(n - 1)
