@@ -107,7 +107,18 @@ object Day17 {
             .minOrNull()
         }
 
-    fun <E> allPerturbations(l: List<E >)
+    fun toOctal(l: List<Int>): Int =
+        toOctal(l.joinToString("").toInt()).toInt()
+
+    fun toOctal(n: Int): String =
+        n.toString(8)
+
+    //TODO: uitzoeken hoe het programma werkt
+//    fun run2(input: Input): Int {
+//        return input.program.allPerturbations().windowed(10, 10).firstNotNullOf { lists ->
+//            runMultipleEquals(input.state, input.program, lists.map { toOctal(it) })
+//        }
+//    }
 
     fun run2(input: Input): Int {
         var a = 0

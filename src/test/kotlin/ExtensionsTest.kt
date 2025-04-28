@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
+import kotlin.test.assertContentEquals
+
 class ExtensionsTest {
     @Test
     fun testSwap() {
@@ -18,5 +20,14 @@ class ExtensionsTest {
         assertFalse(sequenceOf(1, 2, 3, 4).equalsList(listOf(1, 2, 3)))
         assertFalse(sequenceOf(1, 2, 3).equalsList(listOf(1, 2, 3, 4)))
         assertFalse(sequenceOf(1, 2, 3).equalsList(listOf(1, 2, 4)))
+    }
+
+    @Test
+    fun testAllPerturbations() {
+        assertContentEquals(sequenceOf(listOf<Int>()), listOf<Int>().allPerturbations())
+        assertContentEquals(sequenceOf(listOf(1)), listOf(1).allPerturbations())
+        assertContentEquals(sequenceOf(listOf(1, 2), listOf(2, 1)), listOf(1, 2).allPerturbations())
+        assertContentEquals(sequenceOf(listOf(1, 2, 3), listOf(1, 3, 2), listOf(2, 1, 3), listOf(2, 3, 1), listOf(3, 1, 2), listOf(3, 2, 1)), listOf(1, 2, 3).allPerturbations())
+        assertEquals(sequenceOf(listOf(1, 1, 2), listOf(1, 2, 1), listOf(2, 1, 1), listOf(2, 1, 1), listOf(1, 1, 2), listOf(1, 2, 1)).toSet(), listOf(1, 1, 2).allPerturbations().toSet())
     }
 }

@@ -44,6 +44,18 @@ fun <T> Sequence<T>.equalsList(l: List<T>): Boolean {
     return !iterator.hasNext()
 }
 
+fun <E> List<E>.allPerturbations(): Sequence<List<E>> =
+    if (isEmpty()) sequenceOf(emptyList())
+    else {
+        flatMap { e ->
+            val rest = minusElement(e)
+            rest.allPerturbations().map {
+                listOf(e) + it
+            }
+        }.asSequence()
+    }
+
+
 fun Int.isEven() = this % 2 == 0
 
 fun Int.pow(n: Int): Int = if (n == 0) 1 else this * pow(n - 1)
