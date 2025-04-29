@@ -1,28 +1,35 @@
+import Coordinate
 import Day18.parse
 import Day18.run1
 import Day18.run2
+import kotlin.Int
 import kotlin.math.absoluteValue
 
 object Day18 {
     fun parse(input: String): List<Coordinate<Int>> =
         input.lines().map { Coordinate.parseIntCoordinate(it) }
 
-    fun mazeFromGrid(grid: Grid<Char>): Maze =
-        object : Maze {
-            override fun start(): Coordinate<Int> = grid.findAll('S').single()
-            override fun finish(): Coordinate<Int> = grid.findAll('E').single()
-            override fun stepsFrom(l: Coordinate<Int>): List<Coordinate<Int>> =
-                grid.neighbours(l, Coordinate.straightDirections).filter { grid.get(it) != '#' }
-            override fun heuristic(l: Coordinate<Int>): Int =
-                (l.x - finish().x).absoluteValue + (l.y - finish().y).absoluteValue
+    class Maze(val grid: Grid<Char>) : SearchSpace<Coordinate<Int>> {
+        override fun start(): Coordinate<Int> = grid.findAll('S').single()
+        override fun finish(): Coordinate<Int> = grid.findAll('E').single()
+        override fun stepsFrom(l: Coordinate<Int>): List<Coordinate<Int>> =
+            grid.neighbours(l, Coordinate.straightDirections).filter { grid.get(it) != '#' }
+        override fun heuristic(l: Coordinate<Int>): Int =
+            (l.x - finish().x).absoluteValue + (l.y - finish().y).absoluteValue
+
+        override fun debug(states: List<Intermediate<Coordinate<Int>>>) {
+            states.fold(grid) { g, i ->
+                g.set(i.path.last(), 'O')
+            }.print()
         }
+    }
 
     fun run1(input: List<Coordinate<Int>>, size: Int = 71): Int {
         val grid = input.take(1024).fold(Grid.init(size, size, '.')) { g, c ->
             g.set(c, '#')
         }.set(Coordinate.create(0, 0), 'S').set(Coordinate.create(size - 1, size - 1), 'E')
         grid.print()
-        val s = aStar(mazeFromGrid(grid))!!
+        val s = aStar<Coordinate<Int>>(Maze(grid))!!
         return s.size - 1
     }
 

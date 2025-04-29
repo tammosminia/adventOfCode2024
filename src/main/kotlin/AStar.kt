@@ -1,22 +1,23 @@
-import kotlin.math.min
+//TODO: nonEmptyList starting with start, is one longer than the amount of steps
+typealias Path<State> = List<State>
 
-// TODO: more generic
-interface Maze {
-    fun start(): Coordinate<Int>
-    fun finish(): Coordinate<Int>
-    fun stepsFrom(l: Coordinate<Int>): List<Coordinate<Int>>
+data class Intermediate<State>(val minValue: Int, val path: Path<State>)
+
+interface SearchSpace<State> {
+
+    fun start(): State
+    fun finish(): State
+    fun stepsFrom(s: State): List<State>
     // A quick estimation of the number of steps needed to get from l to the finish
     // It may be lower than the actual length, but never higher
-    fun heuristic(l: Coordinate<Int>): Int
+    fun heuristic(s: State): Int
+    //for debug purposes
+    fun debug(current: List<Intermediate<State>>): Unit = Unit
 }
 
-//TODO: nonEmptyList starting with start, is one longer than the amount of steps
-typealias Path = List<Coordinate<Int>>
+fun <T> aStar(maze: SearchSpace<T>): Path<T>?  {
 
-fun aStar(maze: Maze): Path?  {
-    data class Intermediate(val minValue: Int, val path: Path)
-
-    fun addReplace(paths: List<Intermediate>, newPaths: List<Intermediate>): List<Intermediate> =
+    fun addReplace(paths: List<Intermediate<T>>, newPaths: List<Intermediate<T>>): List<Intermediate<T>> =
         newPaths.fold(paths) { paths, newPath ->
             val existing = paths.find { it.path.last() == newPath.path.last() }
             if (existing == null)
@@ -26,7 +27,7 @@ fun aStar(maze: Maze): Path?  {
             else paths
         }
 
-    tailrec fun solution(paths: List<Intermediate>): Path? {
+    tailrec fun solution(paths: List<Intermediate<T>>): Path<T>? {
         if (paths.isEmpty()) return null
         val shortest = paths.minBy { it.minValue }
         val others = paths.minusElement(shortest)
@@ -40,7 +41,7 @@ fun aStar(maze: Maze): Path?  {
                     val minValue = newPath.size + maze.heuristic(step)
                     Intermediate(minValue, newPath)
                 }
-            solution(addReplace(others, newPaths))
+            solution(addReplace(others, newPaths).also { maze.debug(it) })
         }
     }
     return solution(listOf(Intermediate(0, listOf(maze.start()))))
