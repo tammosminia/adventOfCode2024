@@ -16,23 +16,42 @@ object Day18 {
         override fun heuristic(l: Coordinate<Int>): Int =
             (l.x - finish().x).absoluteValue + (l.y - finish().y).absoluteValue
 
-        override fun debug(states: List<Intermediate<Coordinate<Int>>>) {
-            states.fold(grid) { g, i ->
-                g.set(i.path.last(), 'O')
-            }.print()
-        }
+//        override fun debug(states: List<Intermediate<Coordinate<Int>>>) {
+//            states.fold(grid) { g, i ->
+//                g.set(i.path.last(), 'O')
+//            }.print()
+//        }
     }
 
     fun run1(input: List<Coordinate<Int>>, size: Int = 71): Int {
         val grid = input.take(1024).fold(Grid.init(size, size, '.')) { g, c ->
             g.set(c, '#')
         }.set(Coordinate.create(0, 0), 'S').set(Coordinate.create(size - 1, size - 1), 'E')
-        grid.print()
-        val s = aStar<Coordinate<Int>>(Maze(grid))!!
+        val s = aStar(Maze(grid))!!
         return s.size - 1
     }
 
-    fun run2(input: List<Coordinate<Int>>) = 0
+    fun run2(input: List<Coordinate<Int>>, size: Int = 71, firstTake: Int = 1024): String {
+        fun createGrid(take: Int): Grid<Char> = input.take(take).fold(Grid.init(size, size, '.')) { g, c ->
+            g.set(c, '#')
+        }.set(Coordinate.create(0, 0), 'S').set(Coordinate.create(size - 1, size - 1), 'E')
+
+        var grid = createGrid(firstTake)
+        var s = aStar(Maze(grid))!!
+
+        (firstTake+1).rangeTo(input.size).forEach { i ->
+            val currentByte = input[i]
+            grid = grid.set(currentByte, '#')
+            if (s.contains(currentByte)) {
+                println("recalculating path at step $i currentByte: $currentByte")
+                grid.print()
+                val newS = aStar(Maze(grid))
+                if (newS == null) return "${currentByte.x},${currentByte.y}"
+                else s = newS
+            }
+        }
+        throw IllegalStateException("No blocking byte found")
+    }
 
 }
 

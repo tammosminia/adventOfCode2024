@@ -39,6 +39,6 @@ class Day18Test {
     }
     @Test
     fun test2() {
-        assertEquals(117440, run2(input1))
+        assertEquals("6,1", run2(input1, 7, 12))
     }
 }
