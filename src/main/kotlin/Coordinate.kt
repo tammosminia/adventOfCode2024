@@ -1,3 +1,5 @@
+import create
+
 fun interface Addition<T> {
     fun plus(a: T, b: T): T
 }
@@ -63,3 +65,8 @@ val longMath = SimpleMath.create(Long::plus, Long::minus, Long::times)
 fun Coordinate.Companion.create(x: Long, y: Long): Coordinate<Long> = Coordinate(x, y, longMath)
 val doubleMath = SimpleMath.create(Double::plus, Double::minus, Double::times)
 fun Coordinate.Companion.create(x: Double, y: Double): Coordinate<Double> = Coordinate(x, y, doubleMath)
+
+fun Coordinate.Companion.parseIntCoordinate(s: String): Coordinate<Int> {
+    val (x, y) = s.split(",").map { it.toInt() }
+    return Coordinate.create(x, y)
+}
