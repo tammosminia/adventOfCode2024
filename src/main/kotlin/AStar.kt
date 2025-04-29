@@ -1,10 +1,9 @@
 //TODO: nonEmptyList starting with start, is one longer than the amount of steps
 typealias Path<State> = List<State>
 
-data class Intermediate<State>(val minValue: Int, val path: Path<State>)
+data class Intermediate<State>(val minValue: Int, val path: Path<State>, val replaced: Boolean = false)
 
 interface SearchSpace<State> {
-
     fun start(): State
     fun finish(): State
     fun stepsFrom(s: State): List<State>
@@ -28,8 +27,9 @@ fun <T> aStar(maze: SearchSpace<T>): Path<T>?  {
         }
 
     tailrec fun solution(paths: List<Intermediate<T>>): Path<T>? {
-        if (paths.isEmpty()) return null
-        val shortest = paths.minBy { it.minValue }
+        val nonReplaced = paths.filterNot { it.replaced }
+        if (nonReplaced.isEmpty()) return null
+        val shortest = nonReplaced.minBy { it.minValue }
         val others = paths.minusElement(shortest)
         val currentLocation = shortest.path.last()
         return if (currentLocation == maze.finish()) shortest.path
@@ -41,7 +41,7 @@ fun <T> aStar(maze: SearchSpace<T>): Path<T>?  {
                     val minValue = newPath.size + maze.heuristic(step)
                     Intermediate(minValue, newPath)
                 }
-            solution(addReplace(others, newPaths).also { maze.debug(it) })
+            solution(addReplace(others + shortest.copy(replaced = true), newPaths).also { maze.debug(it) })
         }
     }
     return solution(listOf(Intermediate(0, listOf(maze.start()))))

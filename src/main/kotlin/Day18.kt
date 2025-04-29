@@ -1,4 +1,3 @@
-import Coordinate
 import Day18.parse
 import Day18.run1
 import Day18.run2
