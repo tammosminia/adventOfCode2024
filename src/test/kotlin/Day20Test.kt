@@ -30,6 +30,9 @@ class Day20Test {
     }
     @Test
     fun test2() {
-        assertEquals(16, run2(input1))
+        assertEquals(3, run2(input1, 76))
+        val total = listOf(32,31,29,39,25,23,20,19,12,14,12,22,4,3).sum()
+        assertEquals(total, run2(input1, 50))
+
     }
 }

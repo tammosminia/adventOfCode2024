@@ -1,45 +1,41 @@
 import Day20.parse
 import Day20.run1
 import Day20.run2
-import arrow.core.MemoizedDeepRecursiveFunction
 import kotlin.Int
+import kotlin.math.absoluteValue
 
 object Day20 {
     fun parse(input: String) = Grid.parseCharGrid(input)
 
-    fun dropOneWall(grid: Grid<Char>): List<Grid<Char>> =
-        grid.findAll('#')
-            .filter { c ->
-                grid.neighbours(c).mapNotNull { grid.getSafe(it) }.count { it != '#'} >= 2
-//                (c.x > 0 && c.y > 0 && c.x < grid.width() - 1 && c.y < grid.height() - 1) && (
-//
-//                )
-            }
-            .map { c ->
-                grid.set(c, '.')
-            }
+    data class Cheat(val from: Coordinate<Int>, val to: Coordinate<Int>, val less: Int)
 
-    data class Cheat(val c: Coordinate<Int>, val less: Int)
-    fun findCheat(grid: Grid<Int?>, c: Coordinate<Int>): List<Cheat> {
+    fun findCheat2(grid: Grid<Int?>, c: Coordinate<Int>, cheatTime: Int = 20): List<Cheat> {
         val from = grid.get(c)!!
-        return Coordinate.straightDirections.mapNotNull {
-            val toC = c + it * 2
-            grid.getSafe(toC)?.let { it - from - 2 }?.let { safe ->
-                if (safe > 0) Cheat(toC, safe) else null
+        val cheats = (-cheatTime).rangeTo(cheatTime).flatMap { dx ->
+            val cheatLeft = cheatTime - dx.absoluteValue
+            (-cheatLeft).rangeTo(cheatLeft).mapNotNull { dy ->
+                val cheated = dx.absoluteValue + dy.absoluteValue
+                val toC = Coordinate.create(c.x + dx, c.y + dy)
+                grid.getSafe(toC)?.let { it - from - cheated }?.let { safe ->
+                    if (safe > 0) Cheat(c, toC, safe) else null
+                }
             }
         }
+        return cheats
     }
 
-    fun run1(input: Grid<Char>, saveAtLeast: Int): Int {
+    fun run(input: Grid<Char>, saveAtLeast: Int, cheatTime: Int): Int {
         val path = aStar(Maze(input))!!
         val numberedPath = path.foldIndexed(Grid.init<Int?>(input.width(), input.height(), null)) { i, g, e ->
             g.set(e, i)
         }
-        val cheats = path.toList().flatMap { findCheat(numberedPath, it) }
+        val cheats = path.toList().flatMap { findCheat2(numberedPath, it, cheatTime) }
         return cheats.count { it.less >= saveAtLeast }
     }
 
-    fun run2(input: Grid<Char>): Int = 0
+    fun run1(input: Grid<Char>, saveAtLeast: Int) = run(input, saveAtLeast, 2)
+
+    fun run2(input: Grid<Char>, saveAtLeast: Int) = run(input, saveAtLeast, 20)
 }
 
 fun main() {
@@ -188,5 +184,5 @@ fun main() {
     """.trimIndent()
     val parsed = parse(input)
     println(run1(parsed, 100))
-    println(run2(parsed))
+    println(run2(parsed, 100))
 }
