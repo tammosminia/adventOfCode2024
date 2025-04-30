@@ -2,26 +2,10 @@ import Day18.parse
 import Day18.run1
 import Day18.run2
 import kotlin.Int
-import kotlin.math.absoluteValue
 
 object Day18 {
     fun parse(input: String): List<Coordinate<Int>> =
         input.lines().map { Coordinate.parseIntCoordinate(it) }
-
-    class Maze(val grid: Grid<Char>) : SearchSpace<Coordinate<Int>> {
-        override fun start(): Coordinate<Int> = grid.findAll('S').single()
-        override fun finish(): Coordinate<Int> = grid.findAll('E').single()
-        override fun stepsFrom(l: Coordinate<Int>): List<Coordinate<Int>> =
-            grid.neighbours(l, Coordinate.straightDirections).filter { grid.get(it) != '#' }
-        override fun heuristic(l: Coordinate<Int>): Int =
-            (l.x - finish().x).absoluteValue + (l.y - finish().y).absoluteValue
-
-//        override fun debug(states: List<Intermediate<Coordinate<Int>>>) {
-//            states.fold(grid) { g, i ->
-//                g.set(i.path.last(), 'O')
-//            }.print()
-//        }
-    }
 
     fun createGrid(input: List<Coordinate<Int>>, size: Int): Grid<Char> =
         input.fold(Grid.init(size, size, '.')) { g, c ->

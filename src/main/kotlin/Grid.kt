@@ -43,7 +43,7 @@ data class Grid<E>(val m: List<List<E>>) {
     fun <R> map(f: (E) -> R): Grid<R> =
         Grid(m.map { it.map(f) })
 
-    fun neighbours(c: Coordinate<Int>, directions: Set<Coordinate<Int>>): Set<Coordinate<Int>> =
+    fun neighbours(c: Coordinate<Int>, directions: Set<Coordinate<Int>> = Coordinate.straightDirections): Set<Coordinate<Int>> =
         directions.map { c + it }
             .filter { isInside(it) }
             .toSet()
