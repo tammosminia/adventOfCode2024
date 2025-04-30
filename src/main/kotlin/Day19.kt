@@ -33,21 +33,21 @@ object Day19 {
             isPossible(input, design).also { println("$design $it") }
         }.count { it }
 
-    fun arrangements(input: Input, design: String): List<List<String>> {
-        val rec = MemoizedDeepRecursiveFunction<String, List<List<String>>> { design ->
-            if (design.isEmpty()) listOf(emptyList())
-            else input.towels.flatMap { towel ->
-                if (!design.startsWith(towel)) emptyList()
-                else callRecursive(design.drop(towel.length)).map { towel prependTo it }
+    fun arrangements(input: Input, design: String): Long {
+        val rec = MemoizedDeepRecursiveFunction<String, Long> { design ->
+            if (design.isEmpty()) 1
+            else input.towels.sumOf { towel ->
+                if (!design.startsWith(towel)) 0
+                else callRecursive(design.drop(towel.length))
             }
         }
         return rec(design)
     }
 
-    fun run2(input: Input): Int =
+    fun run2(input: Input): Long =
         input.designs.map { design ->
             arrangements(input, design).also { println("$design $it") }
-        }.sumOf { it.size }
+        }.sumOf { it }
 }
 
 fun main() {
