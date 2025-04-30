@@ -23,20 +23,19 @@ object Day18 {
 //        }
     }
 
-    fun run1(input: List<Coordinate<Int>>, size: Int = 71): Int {
-        val grid = input.take(1024).fold(Grid.init(size, size, '.')) { g, c ->
+    fun createGrid(input: List<Coordinate<Int>>, size: Int): Grid<Char> =
+        input.fold(Grid.init(size, size, '.')) { g, c ->
             g.set(c, '#')
         }.set(Coordinate.create(0, 0), 'S').set(Coordinate.create(size - 1, size - 1), 'E')
+
+    fun run1(input: List<Coordinate<Int>>, size: Int = 71): Int {
+        val grid = createGrid(input.take(1024), size)
         val s = aStar(Maze(grid))!!
         return s.size - 1
     }
 
     fun run2(input: List<Coordinate<Int>>, size: Int = 71, firstTake: Int = 1024): String {
-        fun createGrid(take: Int): Grid<Char> = input.take(take).fold(Grid.init(size, size, '.')) { g, c ->
-            g.set(c, '#')
-        }.set(Coordinate.create(0, 0), 'S').set(Coordinate.create(size - 1, size - 1), 'E')
-
-        var grid = createGrid(firstTake)
+        var grid = createGrid(input.take(firstTake), size)
         var s = aStar(Maze(grid))!!
 
         (firstTake+1).rangeTo(input.size).forEach { i ->

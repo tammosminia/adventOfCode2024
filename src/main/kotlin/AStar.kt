@@ -1,5 +1,7 @@
-//TODO: nonEmptyList starting with start, is one longer than the amount of steps
-typealias Path<State> = List<State>
+import arrow.core.NonEmptyList
+import arrow.core.nonEmptyListOf
+
+typealias Path<State> = NonEmptyList<State>
 
 data class Intermediate<State>(val minValue: Int, val path: Path<State>, val replaced: Boolean = false)
 
@@ -44,5 +46,5 @@ fun <T> aStar(maze: SearchSpace<T>): Path<T>?  {
             solution(addReplace(others + shortest.copy(replaced = true), newPaths).also { maze.debug(it) })
         }
     }
-    return solution(listOf(Intermediate(0, listOf(maze.start()))))
+    return solution(listOf(Intermediate(0, nonEmptyListOf(maze.start()))))
 }
