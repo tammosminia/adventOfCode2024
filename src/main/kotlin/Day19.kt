@@ -2,8 +2,6 @@ import Day19.parse
 import Day19.run1
 import Day19.run2
 import arrow.core.MemoizedDeepRecursiveFunction
-import arrow.fx.coroutines.parMap
-import kotlinx.coroutines.runBlocking
 import kotlin.Int
 
 object Day19 {

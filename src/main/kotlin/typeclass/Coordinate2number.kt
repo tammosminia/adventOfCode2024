@@ -8,7 +8,7 @@ object Coordinate2number {
     } as T
 
     data class Coordinate<T: Number>(val x: T, val y: T) {
-        infix fun add(c: Coordinate<T>): Coordinate<T> = Coordinate<T>(x.add(c.x), y.add(c.y))
+        infix fun add(c: Coordinate<T>): Coordinate<T> = Coordinate(x.add(c.x), y.add(c.y))
     }
 
     val i: Coordinate<Int> = Coordinate(0, 4) add Coordinate(1, 2)

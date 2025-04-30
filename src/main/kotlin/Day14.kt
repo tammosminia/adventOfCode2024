@@ -70,7 +70,7 @@ object Day14 {
         return rr.safetyFactor()
     }
 
-    tailrec fun run2(rr: RobotRoom, time: Int = 0): Unit {
+    tailrec fun run2(rr: RobotRoom, time: Int = 0) {
         if (mightBeTree(rr)) {
             println("time: $time")
             rr.print()

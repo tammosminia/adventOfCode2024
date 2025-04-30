@@ -1,5 +1,3 @@
-import create
-
 fun interface Addition<T> {
     fun plus(a: T, b: T): T
 }
@@ -54,9 +52,9 @@ data class Coordinate<T>(val x: T, val y: T, val math: SimpleMath<T>) {
         right -> down
         else -> throw IllegalArgumentException("Invalid direction")
     }
-    operator fun plus(c: Coordinate<T>): Coordinate<T> = Coordinate<T>(math.plus(x, c.x), math.plus(y, c.y), math)
-    operator fun minus(c: Coordinate<T>): Coordinate<T> = Coordinate<T>(math.minus(x, c.x), math.minus(y, c.y), math)
-    operator fun times(t: T): Coordinate<T> = Coordinate<T>(math.times(x, t), math.times(y, t), math)
+    operator fun plus(c: Coordinate<T>): Coordinate<T> = Coordinate(math.plus(x, c.x), math.plus(y, c.y), math)
+    operator fun minus(c: Coordinate<T>): Coordinate<T> = Coordinate(math.minus(x, c.x), math.minus(y, c.y), math)
+    operator fun times(t: T): Coordinate<T> = Coordinate(math.times(x, t), math.times(y, t), math)
 }
 
 val intMath = SimpleMath.create(Int::plus, Int::minus, Int::times)
