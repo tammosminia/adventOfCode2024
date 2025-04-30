@@ -1,6 +1,9 @@
 import Day19.parse
 import Day19.run1
 import Day19.run2
+import arrow.core.MemoizedDeepRecursiveFunction
+import arrow.fx.coroutines.parMap
+import kotlinx.coroutines.runBlocking
 import kotlin.Int
 
 object Day19 {
@@ -15,19 +18,36 @@ object Day19 {
     }
 
     fun isPossible(input: Input, design: String): Boolean {
-        fun rec(design: String): Boolean =
+        val rec = MemoizedDeepRecursiveFunction<String, Boolean> { design ->
             if (design.isEmpty()) true
             else input.towels.any { towel ->
-                if (!design.startsWith(towel) ) false
-                else rec(design.drop(towel.length))
+                if (!design.startsWith(towel)) false
+                else callRecursive(design.drop(towel.length))
             }
+        }
         return rec(design)
     }
 
-    fun run1(input: Input): Int = input.designs.count { isPossible(input, it) }
+    fun run1(input: Input): Int =
+        input.designs.map { design ->
+            isPossible(input, design).also { println("$design $it") }
+        }.count { it }
 
-    fun run2(input: Input): Int = 0
+    fun arrangements(input: Input, design: String): List<List<String>> {
+        val rec = MemoizedDeepRecursiveFunction<String, List<List<String>>> { design ->
+            if (design.isEmpty()) listOf(emptyList())
+            else input.towels.flatMap { towel ->
+                if (!design.startsWith(towel)) emptyList()
+                else callRecursive(design.drop(towel.length)).map { towel prependTo it }
+            }
+        }
+        return rec(design)
+    }
 
+    fun run2(input: Input): Int =
+        input.designs.map { design ->
+            arrangements(input, design).also { println("$design $it") }
+        }.sumOf { it.size }
 }
 
 fun main() {

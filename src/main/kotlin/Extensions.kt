@@ -55,6 +55,9 @@ fun <E> List<E>.allPerturbations(): Sequence<List<E>> =
         }.asSequence()
     }
 
+fun <E> List<E>.prepend(e: E): List<E> = listOf(e) + this
+
+infix fun <E> E.prependTo(l: List<E>): List<E> = l.prepend(this)
 
 fun Int.isEven() = this % 2 == 0
 
