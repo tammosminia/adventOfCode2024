@@ -52,6 +52,15 @@ data class Coordinate<T>(val x: T, val y: T, val math: SimpleMath<T>) {
         right -> down
         else -> throw IllegalArgumentException("Invalid direction")
     }
+
+    fun directionChar(): Char? = when(this) {
+        left -> '<'
+        right -> '>'
+        up -> '^'
+        down -> 'v'
+        else -> null
+    }
+
     operator fun plus(c: Coordinate<T>): Coordinate<T> = Coordinate(math.plus(x, c.x), math.plus(y, c.y), math)
     operator fun minus(c: Coordinate<T>): Coordinate<T> = Coordinate(math.minus(x, c.x), math.minus(y, c.y), math)
     operator fun times(t: T): Coordinate<T> = Coordinate(math.times(x, t), math.times(y, t), math)

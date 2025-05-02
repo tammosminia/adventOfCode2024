@@ -5,13 +5,6 @@ import Day6.run2
 object Day6 {
     fun parse(input: String): Grid<Char> = Grid.parseCharGrid(input)
 
-    fun Coordinate<Int>.directionChar(): Char = when(this) {
-        Coordinate.left -> '<'
-        Coordinate.right -> '>'
-        Coordinate.up -> '^'
-        Coordinate.down -> 'v'
-        else -> 'X'
-    }
     const val free = '.'
     val visited = "X<>^v".toCharArray()
     const val obstacle = '#'
@@ -24,7 +17,7 @@ object Day6 {
 
     data class State(val grid: Grid<Char>, val guard: Guard) {
         fun guardHasLeft() = !grid.isInside(guard.location)
-        fun isLooping(): Boolean = grid.get(guard.location) == guard.direction.directionChar()
+        fun isLooping(): Boolean = grid.get(guard.location) == (guard.direction.directionChar() ?: 'X')
     }
 
     fun oneStep(s: State): State {
@@ -33,7 +26,7 @@ object Day6 {
             State(s.grid, s.guard.turnRight())
         else
             State(
-                s.grid.set(s.guard.location, s.guard.direction.directionChar()),
+                s.grid.set(s.guard.location, (s.guard.direction.directionChar() ?: 'X')),
                 s.guard.stepForward()
             )
     }
