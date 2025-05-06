@@ -10,6 +10,7 @@ object Day21 {
     value class Code(val value: List<Char>) {
         operator fun plus(other: Code) = Code(value + other.value)
         operator fun plus(other: Char) = Code(value + other)
+        override fun toString(): String = value.joinToString("")
     }
 
     fun distanceBetween(from: Coordinate<Int>, to: Coordinate<Int>): Int =
@@ -64,11 +65,11 @@ object Day21 {
     fun control(targetKeypad: Keypad, targetCode: Code): List<Code> =
         targetCode.value.prepend('A').windowed(2, 1).fold(listOf(Code(emptyList()))) { acc, chars ->
             val (from, to) = chars
-            val extra = targetKeypad.move(from, to)
+            val extra = targetKeypad.move(from, to).map { it + 'A' }
             acc.flatMap { a ->
                 extra.map { b -> Code(a.value + b.value) }
             }
-        }.map { it + 'A' }
+        }
 
     fun controlMadness(keypads: List<Keypad>, targetCode: Code): List<Code> =
         keypads.fold(listOf(targetCode)) { acc, keypad ->
@@ -86,7 +87,14 @@ object Day21 {
         }
     }
 
-    fun run2(input: List<Code>) = 0
+    fun run2(input: List<Code>): Int {
+        val keypads = listOf(numericKeypad) + List(25) { directionKeypad }
+        return input.sumOf { targetCode ->
+            val sourceCode = controlMadness(keypads, targetCode).minBy { it.value.size }
+            println("$targetCode $sourceCode")
+            sourceCode.value.size * targetCode.value.dropLast(1).joinToString("").toInt()
+        }
+    }
 }
 
 fun main() {
