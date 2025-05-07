@@ -15,6 +15,7 @@ class Day21Test {
     val input1 = parse(sample1)
     @Test
     fun test1() {
+        assertEquals(126384, Day21A.run1(input1))
         assertEquals(126384, run1(input1))
     }
     @Test

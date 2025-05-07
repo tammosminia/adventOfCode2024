@@ -62,3 +62,7 @@ infix fun <E> E.prependTo(l: List<E>): List<E> = l.prepend(this)
 fun Int.isEven() = this % 2 == 0
 
 fun Int.pow(n: Int): Int = if (n == 0) 1 else this * pow(n - 1)
+
+fun <A, B> Comparator<B>.compose(f: (A) -> B): Comparator<A> = Comparator { a1, a2 ->
+    compare(f(a1), f(a2))
+}
