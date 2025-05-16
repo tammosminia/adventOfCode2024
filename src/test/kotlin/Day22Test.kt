@@ -18,6 +18,7 @@ class Day22Test {
         assertEquals(16113920, Day22.prune(100000000))
         assertEquals(15887950, Day22.nextSecret(123))
         assertEquals(16495136, Day22.nextSecret(15887950))
+        assertEquals(8685429, run1(input1.take(1)))
         assertEquals(37327623, run1(input1))
     }
     @Test

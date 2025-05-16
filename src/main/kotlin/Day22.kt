@@ -17,7 +17,7 @@ object Day22 {
         steps.fold(previous) { acc, f -> step(acc, f) }
 
     fun takeSecret(s: Long, times: Long) =
-        0.rangeTo(times).fold(s) { acc, _ -> nextSecret(acc) }
+        0.rangeUntil(times).fold(s) { acc, _ -> nextSecret(acc) }
 
     fun run1(input: List<Long>): Long =
         input.sumOf { buyerSecret ->
