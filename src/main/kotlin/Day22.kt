@@ -24,7 +24,40 @@ object Day22 {
             takeSecret(buyerSecret, 2000)
         }
 
-    fun run2(input: List<Long>): Int = 0
+    fun allSecrets(s: Long, amount: Long) =
+        0.rangeUntil(amount).runningFold(s) { acc, _ -> nextSecret(acc) }
+
+    data class Buyer(private val secret: Long) {
+        val secrets: List<Long> = allSecrets(secret, 2000)
+        val prices: List<Int> = secrets.map { it.toInt() % 10 }
+        //Does not include first
+        val deltas: List<Int> = prices.windowed(2).map { (a, b) -> b - a }
+        //from 4-change sequence to price
+        val sequences: Map<List<Int>, Int> = deltas.windowed(4)
+            .mapIndexed { i, seq -> Pair(seq, prices[i + 3]) }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (key, values) -> values.first() }
+        fun buySequence(sequence: List<Int>): Int = sequences[sequence] ?: 0
+
+        override fun toString(): String = """
+            Buyer secret: $secret
+            secrets: ${secrets}
+            prices: ${prices}
+            deltas: ${deltas}
+        """.trimIndent()
+    }
+
+    fun run2(input: List<Long>): Int {
+        val buyers = input.map(::Buyer)
+        buyers.forEach(::println)
+        val allSequences = buyers.flatMap { buyer -> buyer.sequences.keys }.distinct()
+        return allSequences.maxOf { sequence ->
+            val prices = buyers.map { buyer -> buyer.buySequence(sequence) }
+            val total = prices.sum()
+            println("Sequence: $sequence prices: $prices, total: $total")
+            total
+        }
+    }
 }
 
 fun main() {

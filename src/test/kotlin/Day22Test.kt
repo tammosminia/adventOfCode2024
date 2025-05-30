@@ -11,7 +11,14 @@ class Day22Test {
         100
         2024
     """.trimIndent()
+    val sample2 = """
+        1
+        2
+        3
+        2024
+    """.trimIndent()
     val input1 = parse(sample1)
+    val input2 = parse(sample2)
     @Test
     fun test1() {
         assertEquals(37, Day22.mix(42L, 15L))
@@ -23,6 +30,6 @@ class Day22Test {
     }
     @Test
     fun test2() {
-        assertEquals(3, run2(input1))
+        assertEquals(23, run2(input2))
     }
 }
