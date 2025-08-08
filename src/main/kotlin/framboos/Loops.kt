@@ -3,6 +3,23 @@ package framboos
 object Loops {
 
     /*
+    While is een goede manier om iets te draaien tot een bepaalde eindConditie.
+     */
+    fun play(): Unit = TODO()
+    fun gameOver(): Boolean = TODO()
+    fun runWhile() {
+        while (!gameOver()) {
+            play()
+        }
+    }
+    fun whileTrue() {
+        while (true) {
+            play()
+            if (gameOver()) return
+        }
+    }
+
+    /*
     Ouderwetse manier om dingen met lijsten te doen. Erg foutgevoelig, met name off-by-one-errors.
 
     Kan in Java ook met een ouderwetse for geschreven worden.
